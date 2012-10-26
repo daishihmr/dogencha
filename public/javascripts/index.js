@@ -7,8 +7,7 @@ $(function() {
 	var loadData = [].concat($.map(modelNames, function(m) {
 		return "/data/" + m + ".js";
 	}));
-	loadData.push("/assets/enchant.js/images/font2.png");
-	loadData.push("/assets/enchant.js/images/chara1.gif");
+	loadData.push("http://static.dev7.jp/enchant.js/images/font2.png");
 	game.preload(loadData);
 
 	game.onload = function() {

@@ -37,6 +37,7 @@ object Application extends Controller {
   val unauthorizedPage = Unauthorized(<div><h1>401</h1><a href="/login">ログイン</a>してくださいね</div>).as("text/html")
   val unauthorizedData = Unauthorized(<div><h1>401</h1>権限がないです</div>).as("text/html")
 
+  /** トップページ表示 */
   def index = Action { implicit request =>
     val modelList = DB.withConnection { implicit connection =>
       SQL("select root_file from model where " + where +
@@ -49,19 +50,27 @@ object Application extends Controller {
     }
     Ok(views.html.index(modelList))
   }
+
+  /** ダウンロードページ表示 */
   def downloadPage = Action { implicit request =>
     Ok(views.html.download())
   }
+
+  /** アップロードページ表示 */
   def uploadPage = Action { implicit request =>
     loginUser.map { user =>
       Ok(views.html.fileupload())
     }.getOrElse(unauthorizedPage)
   }
+
+  /** ファイル一覧表示 */
   def selectFilePage = Action { implicit request =>
     loginUser.map { user =>
       Ok(views.html.selectFile(new File(Setting.dataDir, user.name)))
     }.getOrElse(unauthorizedPage)
   }
+
+  /** ホームページ表示 */
   def homePage = Action { implicit request =>
     import Twitters._
     loginUser.map { user =>
@@ -72,6 +81,8 @@ object Application extends Controller {
       Ok(views.html.home(Twitters.fromSession.get, modelList))
     }.getOrElse(unauthorizedPage)
   }
+
+  /** ユーザー情報ページ表示 */
   def userPage(userName: String) = TODO
 
   /** みんなのモデル */
@@ -152,6 +163,7 @@ object Application extends Controller {
     Ok(views.html.modelInner(dataName))
   }
 
+  /** ログイン処理 */
   def login = Action {
     val requestToken = Twitters.create.getOAuthRequestToken(Setting.loginCallbackUrl)
 
@@ -160,6 +172,7 @@ object Application extends Controller {
         "requestToken" -> requestToken.getToken(),
         "requestTokenSecret" -> requestToken.getTokenSecret())
   }
+  /** ログイン.Twitterからのコールバック処理 */
   def callback = Action { implicit request =>
     Twitters.requestTokenFromFlash.map { requestToken =>
 
@@ -175,10 +188,12 @@ object Application extends Controller {
       }.getOrElse(unauthorizedPage)
     }.getOrElse(unauthorizedPage)
   }
+  /** ログアウト処理 */
   def logout = Action {
     Redirect(routes.Application.index()).withNewSession
   }
 
+  /** アップロード処理 */
   def upload = Action(parse.multipartFormData) { implicit request =>
     loginUser.map { user =>
       request.body.file("file").map { f =>
@@ -188,7 +203,7 @@ object Application extends Controller {
           case "zip" => {
             val unzip = new Unzip
             try {
-              unzip.unzip(Setting.userDir, f.filename, f.ref.file)
+              unzip.unzip(Setting.userDir, f.filename, f.ref.file, "suf", "atr", "l3p", "l3c", "bmp")
               None
             } catch {
               case e => {
@@ -211,6 +226,7 @@ object Application extends Controller {
     }.getOrElse(unauthorizedPage)
   }
 
+  /** ファイル一覧でルートファイルを決定した時 */
   def selectFile = Action { implicit request =>
     loginUser.map { user =>
 
@@ -223,6 +239,7 @@ object Application extends Controller {
     }.getOrElse(unauthorizedPage)
   }
 
+  /** モデルデータの変更を保存する時 */
   def modelEdit(dataName: String) = Action { implicit request =>
     val modelForm: Form[ModelEdit] = Form.apply(
       mapping("id" -> longNumber,
@@ -254,6 +271,7 @@ object Application extends Controller {
     }.getOrElse(unauthorizedPage)
   }
 
+  /** モデルを削除する時 */
   def modelDelete(dataName: String) = Action { implicit request =>
     loginUser.map { user =>
 
