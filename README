@@ -1,4 +1,3 @@
-This is your new Play 2.0 application
-=====================================
+## DOGAデータをgl.enchant.js用にコンバートするWebサービス
 
-This file will be packaged with your application, when using `play dist`.
+play2.0で作ってます。
