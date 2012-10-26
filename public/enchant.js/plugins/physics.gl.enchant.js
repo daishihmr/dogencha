@@ -1,9 +1,11 @@
-/*
+/**
+ * @fileOverview
  * physics.gl.enchant.js
- * @version 0.3.2
- * @require enchant.js v0.4.3+
- * @require gl.enchant.js v0.3.2+
- * @require primitive.gl.enchant.js v0.3.2+
+ * @version 0.3.6
+ * @require enchant.js v0.4.5+
+ * @require gl.enchant.js v0.3.6+
+ * @require primitive.gl.enchant.js v0.3.5+
+ * @require gl-matrix.js 1.3.7+
  * @author Ubiquitous Entertainment Inc.
  *
  * @description
@@ -13,8 +15,15 @@
  * ammo.js:
  * https://github.com/kripken/ammo.js
  */
-if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
+if (typeof Ammo === 'undefined') {
+    throw new Error('physics.gl.enchant.js must be loaded after ammo.js');
+}
+if (enchant.gl !== undefined && enchant.gl.primitive !== undefined) {
     (function() {
+        /**
+         * namespace object
+         * @type {Object}
+         */
         enchant.gl.physics = {};
         /**
          * @scope enchant.gl.physics.World.prototype
@@ -87,12 +96,14 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
             contactPairTest: function(rigid1, rigid2) {
                 var callback = new Ammo.ConcreteContactResultCallback();
                 var result = false;
-                Ammo.customizeVTable(callback, [{
-                    original: Ammo.ConcreteContactResultCallback.prototype.addSingleResult,
-                    replacement: function(tp, cp, colObj0, partid0, index0, colObj1, partid1, index1) {
-                        result = true;
+                Ammo.customizeVTable(callback, [
+                    {
+                        original: Ammo.ConcreteContactResultCallback.prototype.addSingleResult,
+                        replacement: function(tp, cp, colObj0, partid0, index0, colObj1, partid1, index1) {
+                            result = true;
+                        }
                     }
-                }]);
+                ]);
                 this._dynamicsWorld.contactPairTest(rigid1.rigidBody, rigid2.rigidBody, callback);
                 Ammo.destroy(callback);
                 return result;
@@ -120,9 +131,10 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @constructs
              */
             initialize: function(shape, mass, lDamp, aDamp) {
-                if (typeof shape == 'undefined') {
+                if (typeof shape === 'undefined') {
                     shape = new Ammo.btBoxShape(1);
-                } if (typeof mass == 'undefined') {
+                }
+                if (typeof mass === 'undefined') {
                     mass = 1;
                 }
 
@@ -137,9 +149,10 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                 rigidBodyInfo.set_m_restitution(0.1);
                 rigidBodyInfo.set_m_friction(3.0);
 
-                if (typeof lDamp != 'undefined') {
+                if (typeof lDamp !== 'undefined') {
                     rigidBodyInfo.set_m_linearDamping(lDamp);
-                } if (typeof aDamp != 'undefined') {
+                }
+                if (typeof aDamp !== 'undefined') {
                     rigidBodyInfo.set_m_angularDamping(aDamp);
                 }
 
@@ -182,16 +195,16 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                 this._scaleX *= x;
                 this._scaleY *= y;
                 this._scaleZ *= z;
-                var scale = new Ammo.btVector3(this._scaleX, this._scaleY, this._scaleZ);
-                this.shape.setLocalScaling(scale);
-                Ammo.destroy(scale);
+                var sv = new Ammo.btVector3(this._scaleX, this._scaleY, this._scaleZ);
+                this.shape.setLocalScaling(sv);
+                Ammo.destroy(sv);
             },
             _scaleAxis: function(axis, scale) {
                 axis.toUpperCase();
                 this['_scale' + axis] = scale;
-                var scale = new Ammo.btVector3(this._scaleX, this._scaleY, this._scaleZ);
-                this.shape.setLocalScaling(scale);
-                Ammo.destroy(scale);
+                var sv = new Ammo.btVector3(this._scaleX, this._scaleY, this._scaleZ);
+                this.shape.setLocalScaling(sv);
+                Ammo.destroy(sv);
             },
             /**
              * Move Rigid in a parallel direciton.
@@ -214,13 +227,13 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                 var x = 0;
                 var y = 0;
                 var z = 0;
-                if (axis == 'x') {
+                if (axis === 'x') {
                     x = n - this._x;
                     this._x = n;
-                } else if (axis == 'y') {
+                } else if (axis === 'y') {
                     y = n - this._y;
                     this._y = n;
-                } else if (axis == 'z') {
+                } else if (axis === 'z') {
                     z = n - this._z;
                     this._z = n;
                 }
@@ -272,8 +285,8 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @return {Boolean} bool Presence or absence of rigid.
              */
             contactTest: function(rigid) {
-                if (this.world && rigid.world
-                    && this.world == rigid.world) {
+                if (this.world && rigid.world &&
+                    this.world === rigid.world) {
                     return this.world.contactPairTest(this, rigid);
                 } else {
                     return false;
@@ -328,10 +341,10 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                 this.rigidBody.setCollisionFlags(flag | 2);
                 this.rigidBody.setActivationState(4);
             },
-           /**
-            * Rigid restitutions.
-            * @type Number
-            */
+            /**
+             * Rigid restitutions.
+             * @type Number
+             */
             restitution: {
                 get: function() {
                     return this._restitution;
@@ -341,10 +354,10 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                     this.rigidBody.setRestitution(n);
                 }
             },
-           /**
-            * Rigid frictions.
-            * @type Number
-            */
+            /**
+             * Rigid frictions.
+             * @type Number
+             */
             friction: {
                 get: function() {
                     return this._friction;
@@ -508,11 +521,11 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                     Ammo.destroy(or);
                     Ammo.destroy(tr);
                 };
-                addWall(s, s/8, s, 0, s/8 - s, 0);
-                addWall(s - s/8, s - s/8 - s/8, s/8, s/8, 0, s/8 - s);
-                addWall(s - s/8, s - s/8 - s/8, s/8, -s/8, 0, s - s/8);
-                addWall(s/8, s - s/8 - s/8, s - s/8, s/8 - s, 0, -s/8);
-                addWall(s/8, s - s/8 - s/8, s - s/8, s - s/8, 0, s/8);
+                addWall(s, s / 8, s, 0, s / 8 - s, 0);
+                addWall(s - s / 8, s - s / 8 - s / 8, s / 8, s / 8, 0, s / 8 - s);
+                addWall(s - s / 8, s - s / 8 - s / 8, s / 8, -s / 8, 0, s - s / 8);
+                addWall(s / 8, s - s / 8 - s / 8, s - s / 8, s / 8 - s, 0, -s / 8);
+                addWall(s / 8, s - s / 8 - s / 8, s - s / 8, s - s / 8, 0, s / 8);
                 enchant.gl.physics.Rigid.call(this, shape, mass);
             }
         });
@@ -579,7 +592,7 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @param {Number} fixedTimeStep
              */
             stepSimulation: function(timeStep, maxSubSteps, fixedTimeStep) {
-                subStep = this.world.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
+                var subStep = this.world.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
                 var e = new enchant.Event('timestep');
                 e.timeStep = timeStep;
                 e.subStep = subStep;
@@ -641,7 +654,7 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                     this._y = this.rigid._y = o.y();
                     this._z = this.rigid._z = o.z();
                     this._changedTranslation = true;
-                    var a = [ q.x(), q.y(), q.z(), -q.w() ];
+                    var a = [ q.x(), q.y(), q.z(), q.w() ];
                     var quat = quat4.create(a);
                     quat4.toMat4(quat, this.rotation);
                     Ammo.destroy(t);
@@ -725,17 +738,17 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
             applyImpulse: function(powx, powy, powz, posx, posy, posz) {
                 this.rigid.applyImpulse(powx, powy, powz, posx, posy, posz);
             },
-           /**
+            /**
              * Kinematize Rigid.
              */
             kinematize: function() {
                 this.rigid.kinematize();
             },
-           /**
-            * PhySprite3D restitutions.
-            * @type Number
-            * @see enchant.gl.physics.Rigid#restitution
-            */
+            /**
+             * PhySprite3D restitutions.
+             * @type Number
+             * @see enchant.gl.physics.Rigid#restitution
+             */
             restitution: {
                 get: function() {
                     return this.rigid._restitution;
@@ -745,11 +758,11 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
                     this.rigid.rigidBody.setRestitution(n);
                 }
             },
-           /**
-            * PhySprite3D frictions.
-            * @type Number
-            * @see enchant.gl.physics.Rigid#friction
-            */
+            /**
+             * PhySprite3D frictions.
+             * @type Number
+             * @see enchant.gl.physics.Rigid#friction
+             */
             friction: {
                 get: function() {
                     return this.rigid._friction;
@@ -802,9 +815,9 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @extends enchant.gl.physics.PhySprite3D
              */
             initialize: function(sx, sy, sz, mass) {
-                var rigid = new RigidBox(sx, sy, sz, mass);
+                var rigid = new enchant.gl.physics.RigidBox(sx, sy, sz, mass);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
-                this.mesh = Mesh.createBox(sx, sy, sz);
+                this.mesh = enchant.gl.Mesh.createBox(sx, sy, sz);
             }
         });
 
@@ -823,9 +836,9 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @extends enchant.gl.physics.PhyBox
              */
             initialize: function(s, mass) {
-                var rigid = new RigidBox(s, s, s, mass);
+                var rigid = new enchant.gl.physics.RigidBox(s, s, s, mass);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
-                this.mesh = Mesh.createBox(s, s, s);
+                this.mesh = enchant.gl.Mesh.createBox(s, s, s);
             }
         });
 
@@ -844,14 +857,15 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @extends enchant.gl.physics.PhySprite3D
              */
             initialize: function(r, mass, lDamp, aDamp) {
-                if (typeof lDamp == 'undefined') {
+                if (typeof lDamp === 'undefined') {
                     lDamp = 0.05;
-                } if (typeof aDamp == 'undefined') {
+                }
+                if (typeof aDamp === 'undefined') {
                     aDamp = 0.05;
                 }
-                var rigid = new RigidSphere(r, mass, lDamp, aDamp);
+                var rigid = new enchant.gl.physics.RigidSphere(r, mass, lDamp, aDamp);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
-                this.mesh = Mesh.createSphere(r);
+                this.mesh = enchant.gl.Mesh.createSphere(r);
                 this.addEventListener('timestep', function(e) {
                     this.rigid.rigidBody.applyDamping(e.timeStep);
                 });
@@ -874,9 +888,9 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @extends enchant.gl.physics.PhySprite3D
              */
             initialize: function(r, h, mass) {
-                var rigid = new RigidCylinder(r, h, mass);
+                var rigid = new enchant.gl.physics.RigidCylinder(r, h, mass);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
-                this.mesh = Mesh.createCylinder(r, h);
+                this.mesh = enchant.gl.Mesh.createCylinder(r, h);
             }
         });
 
@@ -897,11 +911,11 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @extends enchant.gl.physics.PhySprite3D
              */
             initialize: function(r, h, mass) {
-                var rigid = new RigidCapsule(r, h, mass);
+                var rigid = new enchant.gl.physics.RigidCapsule(r, h, mass);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
-                this.mesh = Mesh.createCylinder(r, h);
-                this.mesh._join(Mesh.createSphere(r), 0, h, 0);
-                this.mesh._join(Mesh.createSphere(r), 0, -h, 0);
+                this.mesh = enchant.gl.Mesh.createCylinder(r, h);
+                this.mesh._join(enchant.gl.Mesh.createSphere(r), 0, h, 0);
+                this.mesh._join(enchant.gl.Mesh.createSphere(r), 0, -h, 0);
             }
         });
 
@@ -920,22 +934,25 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              * @constructs
              * @extends enchant.gl.physics.PhySprite3D
              */
-            initialize: function(nx, ny, nz, dist) {
-                var rigid = new RigidPlane(nx, ny, nz, dist);
+            initialize: function(nx, ny, nz, dist, scale) {
+                if (!scale) {
+                    scale = 50;
+                }
+
+                var rigid = new enchant.gl.physics.RigidPlane(nx, ny, nz, dist);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
-                this.mesh = Mesh.createPlaneXZ(50);
+                this.mesh = enchant.gl.Mesh.createPlaneXZ(scale);
                 var up = vec3.create([0, 1, 0]);
                 var norm = vec3.create([nx, ny, nz]);
                 var axis = vec3.create();
-                vec3.cross(norm, up, axis);
+                vec3.cross(up, norm, axis);
                 var rad = Math.acos(vec3.dot(up, norm) / (vec3.length(up) * vec3.length(norm)));
-                var rad = Math.acos(vec3.dot(up, norm));
-                var q = new Quat(axis[0], axis[1], axis[2], rad);
-                var vertices = new Array();
-                for (i = 0, l = this.mesh.vertices.length; i < l; i+=3) {
+                var q = new enchant.gl.Quat(axis[0], axis[1], axis[2], rad);
+                var vertices = [];
+                for (var i = 0, l = this.mesh.vertices.length; i < l; i += 3) {
                     var x = this.mesh.vertices[i];
-                    var y = this.mesh.vertices[i+1];
-                    var z = this.mesh.vertices[i+2];
+                    var y = this.mesh.vertices[i + 1];
+                    var z = this.mesh.vertices[i + 2];
                     var arr = q.multiplyVec3([x, y, z]);
                     vertices.push(arr[0] + nx * dist);
                     vertices.push(arr[1] + ny * dist);
@@ -961,21 +978,20 @@ if(enchant.gl != undefined && enchant.gl.primitive != undefined) {
              */
             initialize: function(scale, mass) {
                 var s = scale;
-                var rigid = new RigidContainer(s, mass);
+                var rigid = new enchant.gl.physics.RigidContainer(s, mass);
                 enchant.gl.physics.PhySprite3D.call(this, rigid);
                 var that = this;
-                this.mesh = new Mesh();
-                var that = this;
+                this.mesh = new enchant.gl.Mesh();
                 var addWall = function(sx, sy, sz, px, py, pz) {
-                    that.mesh._join(Mesh.createBox(sx, sy, sz), px, py, pz);
+                    that.mesh._join(enchant.gl.Mesh.createBox(sx, sy, sz), px, py, pz);
                 };
-                addWall(s, s/8, s, 0, s/8 - s, 0);
-                addWall(s - s/8, s - s/8 - s/8, s/8, s/8, 0, s/8 - s);
-                addWall(s - s/8, s - s/8 - s/8, s/8, -s/8, 0, s - s/8);
-                addWall(s/8, s - s/8 - s/8, s - s/8, s/8 - s, 0, -s/8);
-                addWall(s/8, s - s/8 - s/8, s - s/8, s - s/8, 0, s/8);
+                addWall(s, s / 8, s, 0, s / 8 - s, 0);
+                addWall(s - s / 8, s - s / 8 - s / 8, s / 8, s / 8, 0, s / 8 - s);
+                addWall(s - s / 8, s - s / 8 - s / 8, s / 8, -s / 8, 0, s - s / 8);
+                addWall(s / 8, s - s / 8 - s / 8, s - s / 8, s / 8 - s, 0, -s / 8);
+                addWall(s / 8, s - s / 8 - s / 8, s - s / 8, s - s / 8, 0, s / 8);
             }
 
         });
-    })();
-};
+    }());
+}
