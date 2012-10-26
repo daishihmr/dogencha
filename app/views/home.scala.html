@@ -1,0 +1,34 @@
+@(twitter: util.TwitterWraper, modelList: List[models.Model])(implicit user: Option[models.User])
+
+@import views.html.helper._
+@import util.Views
+
+@main(user.get.name + "さんのホーム", user) {
+    
+    <h2><img src="@twitter.img" style="width:64px;height:64px"/> @user.get.name</h2>
+    <br>
+    
+    <div class="row">
+        <div class="span3">
+            <h3><img src="/assets/images/Yellow-Toy-icon.png"/>ユーザー情報</h3>
+            <br>
+            <p>
+                <strong>@user.get.name</strong><br>
+                @twitter.name<br>
+            </p>
+            <p>@twitter.description</p>
+        </div>
+        <div class="span9">
+            <h3><img src="/assets/images/Mask-Toy-icon.png">投稿したモデルデータ</h3>
+            <br>
+            @showModelList(modelList)
+            <br>
+			<h3><img src="/assets/images/lilas-toy-icon.png">ファイル</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="@routes.Application.selectFilePage">ファイル一覧へ</a></li>
+        			<li><a href="@routes.Application.uploadPage" >ファイルをアップロード</a></li>
+                </ul>
+        </div>
+    </div>
+
+}

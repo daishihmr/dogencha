@@ -1,0 +1,36 @@
+@()(implicit user: Option[models.User], flash: Flash)
+
+@import views.html.helper._
+
+@main("ファイルアップロード", user) {
+
+    <h2><img src="/assets/images/lilas-toy-icon.png">ファイルアップロード</h2>
+    <br>
+
+    <div>
+    @flash.get("error").map { e =>
+        <div class="alert fade in">
+            <a class="close" data-dismiss="alert">&times;</a>
+            <div>@e</div>
+        </div>
+    }
+        <div id="uploading-now" class="alert alert-info fade in" style="display:none">
+            <a class="close" data-dismiss="alert">&times;</a>
+            <div>アップロードしています…</div>
+        </div>
+    </div>
+
+    @form(action = routes.Application.upload, 'enctype -> "multipart/form-data", 'id -> "form") {
+        <input type="file" name="file">
+        <p>
+            <input type="submit" id="submit" value="アップロード" class="btn btn-primary">
+        </p>
+    }
+
+<script type="text/javascript">
+$("#form").submit(function() {
+	$("#submit").hide();
+	$("#uploading-now").show();
+});
+</script>
+}

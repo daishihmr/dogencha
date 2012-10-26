@@ -1,0 +1,22 @@
+@()(implicit user: Option[models.User])
+
+@import settings.Setting
+
+@main("download", user) {
+
+    <h2><img src="/assets/images/Fire-Toy-icon.png">ダウンロード</h2>
+    <br>
+    
+    <h3>JavaScriptファイルのみ</h3>
+    <p>
+        <a href='http://@(Setting.staticServerName)/doga.gl.enchant.dev7.js' class="btn btn-large btn-primary">Download JavaScript File</a><br>
+        本サイトで作成できるモデルデータをgl.enchant.jsで利用するためのJavaScriptライブラリです。
+    </p>
+
+    <h3>サンプルプロジェクト</h3>
+    <p>
+        <a href='@routes.Assets.at("file/sample-1.0-SNAPSHOT.zip")' class="btn btn-large btn-primary">Download Sample Project</a><br>
+        本サイトで作成できるモデルデータを使用したサンプルプログラムです。
+    </p>
+
+}

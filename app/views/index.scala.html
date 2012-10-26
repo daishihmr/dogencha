@@ -1,0 +1,44 @@
+@(modelList: Seq[String])(implicit user: Option[models.User])
+
+@import views.html.helper._
+@import settings.Setting
+
+@main("top", user) {
+
+    <h2><img src="/assets/images/Fire-Toy-icon.png">最近投稿されたモデルデータ</h2>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <div class="span6">
+    	        <div id="enchant-stage"></div>
+            </div>
+            <div class="span6">
+                <div id="modelDetail"></div>
+    	        <a href="javascript:void(0)" class="btn" id="detail">詳細を見る</a>
+            </div>
+        </div>
+    </div>
+
+    <script src='http://@(Setting.staticServerName)/enchant.js' type='text/javascript'></script>
+    <script src='http://@(Setting.staticServerName)/gl.enchant.js' type='text/javascript'></script>
+    <script src='http://@(Setting.staticServerName)/glMatrix-0.9.6.min.js' type='text/javascript'></script>
+    <script src='http://@(Setting.staticServerName)/primitive.gl.enchant.js' type='text/javascript'></script>
+    <script src='http://@(Setting.staticServerName)/doga.gl.enchant.dev7.js' type='text/javascript'></script>
+    <script src='@routes.Assets.at("javascripts/util.js")' type='text/javascript'></script>
+    <script type='text/javascript'>
+    var modelNames = [@modelList.map { model => '@model', }];
+    </script>
+    <script src='@routes.Assets.at("javascripts/index.js")' type='text/javascript'></script>
+    <script type='text/javascript'>
+    function setDetailHref(modelName) {
+    	if (modelName) {
+            $("#detail")
+                .attr("href", '@routes.Application.modelPage("modelName")'.replace('modelName', modelName))
+                .removeClass("disabled").removeAttr("disabled");
+    	} else {
+    		$("#detail").removeAttr("href").addClass("disabled").attr("disabled", "disabled");
+    	}
+    }
+    </script>
+}

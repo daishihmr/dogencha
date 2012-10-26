@@ -1,0 +1,25 @@
+@(modelList: List[models.Model], keyword: Option[String])(implicit user: Option[models.User])
+
+@import views.html.helper._
+@import util.Views
+
+@main("models", user) {
+
+    <h2>みんなのモデル</h2>
+    <br>
+
+    <div class="row">
+        <div class="span8">
+            <h3><img src="/assets/images/Mask-Toy-icon.png">モデルデータ一覧</h3>
+            <br>
+            @showModelList(modelList)
+		</div>
+        <div class="span4">
+            <h3><img src="/assets/images/Yellow-Toy-icon.png">モデルを検索</h3>
+            <form method="get" action="search" class="well form-search">
+                <input type="text" name="q" class="input-medium search-query" value='@keyword.getOrElse("")'>
+                <button type="submit" class="btn">Go!</button>
+            </form>
+        </div>
+	</div>
+}

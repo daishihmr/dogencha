@@ -1,0 +1,46 @@
+@(modelList: List[models.Model])
+
+@import util.Views
+
+@modelList.map { model =>
+	<h4><a href="@routes.Application.modelPage(model.rootFile)"><i class="icon-file"></i>@model.name</a></h4>
+	<table class="table table-striped table-condensed">
+	    <thead>
+	        <tr>
+	            <th style="width: 40%"></th>
+	            <th></th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	        <tr>
+	            <th>ルートファイル</th>
+	            <td>@model.rootFile</td>
+	        </tr>
+	        <tr>
+	            <th>投稿者</th>
+	            <td><a href="@routes.Application.userPage(model.author)">@model.author</a> さん</td>
+	        </tr>
+	        <tr>
+	            <th>投稿日</th>
+	            <td>@Views.format(model.createdAt)</td>
+	        </tr>
+	        <tr>
+	            <th>JSONデータ</th>
+	            <td>
+	                <a href='@routes.Jsons.data(model.rootFile)' class="btn btn-mini">
+	                <i class="icon-download-alt"></i>
+	                ダウンロード
+	                </a>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>最終更新日</th>
+	            <td>@Views.format(model.updatedAt)</td>
+	        </tr>
+	        <tr>
+	            <th>ダウンロード回数</th>
+	            <td>? 回</td>
+	        </tr>
+	    </tbody>
+	</table>
+}

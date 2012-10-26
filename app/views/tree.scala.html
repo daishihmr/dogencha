@@ -1,0 +1,47 @@
+@()
+
+@import views.html.helper._
+
+@main("test page", None) {
+<link type='text/css' rel='stylesheet' href='@routes.Assets.at("javascripts/jquery.treeview.css")' />
+
+<h1>てすと</h1>
+
+    <h4>Sample 1 - default</h4>
+    <ul id="browser" class="filetree">
+        <li><span class="folder">Folder 1</span>
+            <ul>
+                <li><span class="file"><a href="javascript:void(0)">Item 1.1</a></span></li>
+            </ul>
+        </li>
+        <li><span class="folder">Folder 2</span>
+            <ul>
+                <li><span class="folder">Subfolder 2.1</span>
+                    <ul id="folder21">
+                        <li><span class="file">File 2.1.1</span></li>
+                        <li><span class="file">File 2.1.2</span></li>
+                    </ul>
+                </li>
+                <li><span class="file">File 2.2</span></li>
+            </ul>
+        </li>
+        <li class="closed"><span class="folder">Folder 3 (closed at start)</span>
+            <ul>
+                <li><span class="file">File 3.1</span></li>
+            </ul>
+        </li>
+        <li><span class="file">File 4</span></li>
+    </ul>
+
+<script type='text/javascript' src='@routes.Assets.at("javascripts/jquery.treeview.js")'></script>
+<script type='text/javascript'>
+$(function() {
+	$("#browser").treeview({
+			animated : "fast"
+		});
+		$(".file").click(function() {
+			console.log("click!!");
+		});
+	});
+</script>
+}

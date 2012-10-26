@@ -1,0 +1,16 @@
+logs
+project/project
+project/target
+target
+tmp
+.history
+dist
+.DS_Store
+.cache
+.classpath
+.project
+.settings
+cache/*
+database
+
+twitter.properties
