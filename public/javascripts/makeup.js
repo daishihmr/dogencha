@@ -4,8 +4,7 @@ var game;
 
 $(function() {
 	game = new Game(320, 320);
-	game.preload("/assets/enchant.js/images/chara1.gif",
-			"/assets/images/ajax-loader2.gif");
+	game.preload("/assets/images/ajax-loader2.gif");
 	game.onload = function() {
 		var scene = new Scene3D();
 		scene.backgroundColor = "#004488";
