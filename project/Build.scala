@@ -4,8 +4,8 @@ import PlayProject._
 
 object ApplicationBuild extends Build {
 
-  val appName = "dev7-enchant-doga"
-  val appVersion = "1.0-SNAPSHOT"
+  val appName = "dogencha"
+  val appVersion = "2.0.0"
 
   val appDependencies = Seq(
     // Add your project dependencies here,

@@ -1,4 +1,4 @@
-libraryDependencies += "jp.dev7" % "dev7-l3c-converter" % "4.4-SNAPSHOT"
+libraryDependencies += "jp.dev7" % "dev7-l3c-converter" % "4.5"
 
 libraryDependencies += "org.twitter4j" % "twitter4j-core" % "2.2.5"
 
