@@ -123,6 +123,7 @@ object Model {
 case class Model(id: Long, rootFile: String, name: Option[String], author: String, createdAt: Date, updatedAt: Date, lastAccessedAt: Date, comment: Option[String], publication: Int) {
   def jsonFileName = new java.io.File(rootFile).getName() + ".js"
   def edit = ModelEdit(id, rootFile, name.getOrElse(""), comment, publication)
+  def thumbnail = rootFile + ".bmp"
 }
 
 case class ModelEdit(id: Long, rootFile: String, name: String, comment: Option[String], publication: Int) {

@@ -300,5 +300,14 @@ object Application extends Controller {
     }.getOrElse(unauthorizedPage)
   }
 
+  /** サムネイル */
+  def modelThumbnail(bmpFile: String) = Action { implicit request =>
+    val file = new File(Setting.dataDir, bmpFile)
+    if (file.exists()) {
+      Ok.sendFile(file).withHeaders(CONTENT_TYPE -> "image/x-windows-bmp")
+    } else {
+      NotFound
+    }
+  }
 }
 

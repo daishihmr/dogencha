@@ -10,7 +10,10 @@ object Setting {
     case _ => "http://localhost:9000/callback"
   }
 
-  def staticServerName = "static.dev7.jp"
+  def staticServerName = current.mode match {
+    case Mode.Prod => "static.dev7.jp"
+    case _ => "localhost:8080"
+  }
 
   def dataDir = current.mode match {
     case Mode.Prod => "/home/webapp/doga.data"

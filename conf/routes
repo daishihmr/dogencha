@@ -21,6 +21,7 @@ GET     /modelEdit/*dataName        controllers.Application.modelEditPage(dataNa
 POST    /modelSubmit/*dataName      controllers.Application.modelEdit(dataName)
 GET     /modelDelete/*dataName      controllers.Application.modelDelete(dataName)
 GET     /modelInner/*dataName       controllers.Application.modelInner(dataName)
+GET     /modelThumbnail/*bmpFile    controllers.Application.modelThumbnail(bmpFile)
 GET     /data/*dataName             controllers.Jsons.data(dataName)
 
 # Map static resources from the /public folder to the /assets URL path
