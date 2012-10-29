@@ -16,12 +16,20 @@ import models.Model
 object Jsons extends Controller {
   val log = LoggerFactory.getLogger("application")
 
-  def data(dataName: String) = dataName match {
-    case dn if dn.endsWith(".l3p") => convertAndJson(dn, new L3pConverter)
-    case dn if dn.endsWith(".l3p.js") => convertAndJson(dn.substring(0, dn.length - 3), new L3pConverter)
-    case dn if dn.endsWith(".l3c") => convertAndJson(dn, new L3cConverter)
-    case dn if dn.endsWith(".l3c.js") => convertAndJson(dn.substring(0, dn.length - 3), new L3cConverter)
-    case _ => Action(NotFound)
+  def data(dataName: String) = {
+    DB.withConnection { implicit connection =>
+      SQL("update model set download_count = download_count + 1 where root_file={dataName}")
+        .on("dataName" -> dataName)
+        .execute()
+    }
+
+    dataName match {
+      case dn if dn.endsWith(".l3p") => convertAndJson(dn, new L3pConverter)
+      case dn if dn.endsWith(".l3p.js") => convertAndJson(dn.substring(0, dn.length - 3), new L3pConverter)
+      case dn if dn.endsWith(".l3c") => convertAndJson(dn, new L3cConverter)
+      case dn if dn.endsWith(".l3c.js") => convertAndJson(dn.substring(0, dn.length - 3), new L3cConverter)
+      case _ => Action(NotFound)
+    }
   }
 
   type CONVERTER = {

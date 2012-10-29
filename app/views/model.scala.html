@@ -34,11 +34,15 @@
 		            <tr>
 		                <th>JSONデータ</th>
 		                <td>
-                            <a href='@routes.Jsons.data(model.rootFile)' class="btn btn-mini">
+                            <a href='@routes.Jsons.data(model.rootFile)' class="btn btn-mini download-btn">
                             <i class="icon-download-alt"></i>
                             ダウンロード
                             </a>
 		                </td>
+		            </tr>
+		            <tr>
+		                <th>ダウンロード回数</th>
+		                <td><span class="download-count">@model.downloadCount</span> 回</td>
 		            </tr>
 		            <tr>
 		                <th>投稿者コメント</th>
@@ -105,7 +109,7 @@ window.onload = function() {
 		$("textarea").mouseup(function() {
 			this.select();
 		});
-		
+
 		$("#delete-button").click(function() {
 			var modelName = $("#page-title").text();
 			if (confirm("モデルデータ「" + modelName + "」を削除しますよ？")) {

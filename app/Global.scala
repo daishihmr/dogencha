@@ -21,12 +21,12 @@ object Global extends GlobalSettings {
         // System.setProperty("dev7.doga.parser.dogaCommonDir", "D:\\devel\\3d\\common_lowercase")
         // System.setProperty("dev7.doga.parser.dogaDataDir", "D:\\devel\\3d\\data")
 
-        //        System.setProperty("dev7.doga.parser.dogaCommonDir", "/Users/daishi_hmr/tool/dogacga/common")
-        //        System.setProperty("dev7.doga.parser.dogaDataDir", "/Users/daishi_hmr/tool/dogacga/data")
+        System.setProperty("dev7.doga.parser.dogaCommonDir", "/Users/daishi_hmr/tool/dogacga/common")
+        System.setProperty("dev7.doga.parser.dogaDataDir", "/Users/daishi_hmr/tool/dogacga/data")
 
-        System.setProperty("dev7.doga.parser.dogaCommonDir", "/Users/narasakitaishi/tool/dogacga/common_lowercase")
-        System.setProperty("dev7.doga.parser.dogaDataDir", "/Users/narasakitaishi/tool/dogacga/data")
-        }
+        //        System.setProperty("dev7.doga.parser.dogaCommonDir", "/Users/narasakitaishi/tool/dogacga/common_lowercase")
+        //        System.setProperty("dev7.doga.parser.dogaDataDir", "/Users/narasakitaishi/tool/dogacga/data")
+      }
     }
 
     val twitterProperties = new Properties

@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /download                   controllers.Application.downloadPage
+GET     /about                      controllers.Application.aboutPage
 GET     /login                      controllers.Application.login
 GET     /callback                   controllers.Application.callback
 GET     /logout                     controllers.Application.logout

@@ -32,7 +32,7 @@
 	        <tr>
 	            <th>JSONデータ</th>
 	            <td>
-	                <a href='@routes.Jsons.data(model.rootFile)' class="btn btn-mini">
+	                <a href='@routes.Jsons.data(model.rootFile)' class="btn btn-mini download-btn">
 	                <i class="icon-download-alt"></i>
 	                ダウンロード
 	                </a>
@@ -44,7 +44,7 @@
 	        </tr>
 	        <tr>
 	            <th>ダウンロード回数</th>
-	            <td>? 回</td>
+	            <td><span class="download-count">@model.downloadCount</span> 回</td>
 	        </tr>
 	    </tbody>
 	</table>

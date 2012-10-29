@@ -51,8 +51,8 @@ object Application extends Controller {
     Ok(views.html.index(modelList))
   }
 
-  /** ダウンロードページ表示 */
-  def downloadPage = Action { implicit request =>
+  /** Aboutページ表示 */
+  def aboutPage = Action { implicit request =>
     Ok(views.html.download())
   }
 

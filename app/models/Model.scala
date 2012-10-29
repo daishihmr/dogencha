@@ -16,12 +16,13 @@ object Model {
       date("updated_at") ~
       date("last_accessed_at") ~
       get[Option[String]]("comment") ~
-      int("publication") map (flatten)
-  val modelParser = tupleParser.map(result => Model(result._1, result._2, result._3, result._4, result._5, result._6, result._7, result._8, result._9))
+      int("publication") ~
+      int("download_count") map (flatten)
+  val modelParser = tupleParser.map(result => Model(result._1, result._2, result._3, result._4, result._5, result._6, result._7, result._8, result._9, result._10))
 
-  def apply(rootFile: String, author: String): Model = Model.apply(-1, rootFile, None, author, null, null, null, None, 0)
+  def apply(rootFile: String, author: String): Model = Model.apply(-1, rootFile, None, author, null, null, null, None, 0, 0)
 
-  def create(rootFile: String, name: String, author: String, comment: Option[String], publication: Int)(implicit connection: Connection) = {
+  def create(rootFile: String, name: String, author: String, comment: Option[String], publication: Int, downloadCount: Int)(implicit connection: Connection) = {
     findByRootFile(rootFile).map { found =>
       None
     }.getOrElse {
@@ -35,7 +36,8 @@ object Model {
           updated_at,
           last_accessed_at,
           comment,
-          publication
+          publication,
+          download_count
 		) values (
           {root_file},
           {name},
@@ -44,7 +46,8 @@ object Model {
           {updated_at},
           {last_accessed_at},
           {comment},
-          {publication}
+          {publication},
+          {download_count}
 		)""").on(
         "root_file" -> rootFile,
         "name" -> name,
@@ -53,7 +56,8 @@ object Model {
         "updated_at" -> now,
         "last_accessed_at" -> now,
         "comment" -> comment,
-        "publication" -> publication)
+        "publication" -> publication,
+        "download_count" -> downloadCount)
       ins.executeInsert().flatMap { id =>
         findById(id)
       }
@@ -120,7 +124,7 @@ object Model {
 
 }
 
-case class Model(id: Long, rootFile: String, name: Option[String], author: String, createdAt: Date, updatedAt: Date, lastAccessedAt: Date, comment: Option[String], publication: Int) {
+case class Model(id: Long, rootFile: String, name: Option[String], author: String, createdAt: Date, updatedAt: Date, lastAccessedAt: Date, comment: Option[String], publication: Int, downloadCount: Int) {
   def jsonFileName = new java.io.File(rootFile).getName() + ".js"
   def edit = ModelEdit(id, rootFile, name.getOrElse(""), comment, publication)
   def thumbnail = rootFile + ".bmp"
@@ -130,10 +134,10 @@ case class ModelEdit(id: Long, rootFile: String, name: String, comment: Option[S
   def save(user: User)(implicit connection: Connection) = {
     val now = new Date
     Model.findById(id).map { model =>
-      val m = Model(id, rootFile, Some(name), user.name, model.createdAt, now, now, comment, publication)
+      val m = Model(id, rootFile, Some(name), user.name, model.createdAt, now, now, comment, publication, model.downloadCount)
       Model.save(m)
     }.getOrElse {
-      Model.create(rootFile, name, user.name, comment, publication)
+      Model.create(rootFile, name, user.name, comment, publication, 0)
     }
   }
 }
