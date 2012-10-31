@@ -98,9 +98,9 @@ object Application extends Controller {
   def search(q: String) = Action { implicit request =>
     val modelList = DB.withConnection { implicit connection =>
       SQL("select * from model where " + where +
-        " and name like '%' || {keyword} || '%'" +
+        " and (name like '%' || {keyword1} || '%' or comment like '%' || {keyword2} || '%')" +
         " order by created_at desc")
-        .on("keyword" -> q)
+        .on("keyword1" -> q, "keyword2" -> q)
         .as(Model.modelParser.*)
     }
 

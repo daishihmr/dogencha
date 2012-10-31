@@ -13,21 +13,12 @@
 	    </thead>
 	    <tbody>
 	        <tr>
-	            <td colspan="2">
-	                <img src="@routes.Application.modelThumbnail(model.thumbnail)" />
-	            </td>
-	        </tr>
-	        <tr>
-	            <th>ルートファイル</th>
-	            <td>@model.rootFile</td>
-	        </tr>
-	        <tr>
-	            <th>投稿者</th>
-	            <td><a href="@routes.Application.userPage(model.author)">@model.author</a> さん</td>
-	        </tr>
-	        <tr>
-	            <th>投稿日</th>
-	            <td>@Views.format(model.createdAt)</td>
+	           <td>
+	               <a href="@routes.Application.modelPage(model.rootFile)">
+	                   <img src="@routes.Application.modelThumbnail(model.thumbnail)" style="width:150px" />
+                   </a>
+	           </td>
+	           <td><pre>@model.comment</pre></td>
 	        </tr>
 	        <tr>
 	            <th>JSONデータ</th>
@@ -37,6 +28,14 @@
 	                ダウンロード
 	                </a>
 	            </td>
+	        </tr>
+	        <tr>
+	            <th>投稿者</th>
+	            <td><a href="@routes.Application.userPage(model.author)">@model.author</a> さん</td>
+	        </tr>
+	        <tr>
+	            <th>投稿日</th>
+	            <td>@Views.format(model.createdAt)</td>
 	        </tr>
 	        <tr>
 	            <th>最終更新日</th>
