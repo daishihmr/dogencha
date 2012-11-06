@@ -51,8 +51,10 @@ object Jsons extends Controller {
   def process(dataName: String, jsonp: Boolean) = dataName match {
     case dn if dn.endsWith(".l3p") => convertAndJson(jsonp, dn, new L3pConverter)
     case dn if dn.endsWith(".l3p.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L3pConverter)
+    case dn if dn.endsWith(".l3p.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new L3pConverter)
     case dn if dn.endsWith(".l3c") => convertAndJson(jsonp, dn, new L3cConverter)
     case dn if dn.endsWith(".l3c.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L3cConverter)
+    case dn if dn.endsWith(".l3c.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new L3cConverter)
     case _ => Action(NotFound)
   }
 

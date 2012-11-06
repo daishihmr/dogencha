@@ -46,7 +46,7 @@
             });
 
             $(".to-copy").each(function() {
-                $(this).text(location.protocol + "//" + location.host + $(this).text() + ".js");
+                $(this).text(location.protocol + "//" + location.host + $(this).text() + ".jsonp");
             }).click(function() {
                 var url = $(this).text();
             });
