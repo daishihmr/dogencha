@@ -39,9 +39,16 @@
                     e.preventDefault();
                     return false;
                 }
+                var countupUrl = $(this).attr("href").replace("data", "countup");
+                $.get(countupUrl);
 	            var dc = $(this).parents("tbody").find(".download-count");
-	            var prev = dc.text();
-	            dc.text(~~prev + 1);
+                dc.text(~~dc.text() + 1);
+            });
+
+            $(".to-copy").each(function() {
+                $(this).text(location.protocol + "//" + location.host + $(this).text() + ".js");
+            }).click(function() {
+                var url = $(this).text();
             });
         });
         </script>

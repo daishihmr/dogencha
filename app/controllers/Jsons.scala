@@ -32,6 +32,18 @@ import util.Controllers.param
 object Jsons extends Controller {
   val log = LoggerFactory.getLogger("application")
 
+  def countup(dataName: String) = Action {
+    log.info("download " + dataName)
+    DB.withConnection { implicit connection =>
+      SQL("update model " +
+        "set download_count = download_count + 1 " +
+        "where root_file={dataName}")
+        .on("dataName" -> dataName)
+        .execute()
+    }
+    Ok
+  }
+
   def data(dataName: String) = process(dataName, false)
 
   def jsonp(dataName: String) = process(dataName, true)
@@ -53,10 +65,10 @@ object Jsons extends Controller {
 
     log.debug("data file = " + dataFile)
     if (dataFile.exists()) {
-      // 最終アクセス日時とダウンロード回数を更新
+      // 最終アクセス日時を更新
       DB.withConnection { implicit connection =>
         SQL("update model " +
-          "set last_accessed_at={now}, download_count = download_count + 1 " +
+          "set last_accessed_at={now} " +
           "where root_file={dataName}")
           .on("now" -> new Date, "dataName" -> dataName)
           .execute()
@@ -90,13 +102,13 @@ object Jsons extends Controller {
             val joined = ByteStreams.join(open, json, close)
 
             SimpleResult(
-              header = ResponseHeader(OK, Map(CONTENT_TYPE -> "text/javascript")),
+              header = ResponseHeader(OK, Map(CONTENT_TYPE -> JAVASCRIPT)),
               Enumerator.fromStream(joined.getInput()))
 
           } getOrElse {
             BadRequest
           }
-        } else Ok.sendFile(file).as("application/json")
+        } else Ok.sendFile(file).as(JSON)
       }
 
       send(cacheFile)
