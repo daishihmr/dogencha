@@ -7,6 +7,7 @@ play2.0.4で作ってます。
 --------------------------
 
 1. developブランチをチェックアウト
+
     <pre>
     git clone https://github.com/daishihmr/dogencha.git
     cd dogencha
@@ -15,10 +16,12 @@ play2.0.4で作ってます。
 
 2. DOGA-L3をセットアップ
  1. COMMONディレクトリ・DATAディレクトリ以下のディレクトリ・ファイル名をすべて小文字にする
+
     ![小文字化](http://cloud.github.com/downloads/daishihmr/dogencha/tolowercase.png)
 
 3. TwitterからConsumerKeyを取得
  1. dogenchaディレクトリにファイルtwitter.propertiesを作成し、以下のように記述
+
     <pre>
     twitter4j.oauth.consumerKey=(ConsumerKey)
     twitter4j.oauth.consumerSecret=(ConsumerSecret)
@@ -26,6 +29,7 @@ play2.0.4で作ってます。
 
 4. conf/application.confを編集
  1. データベース
+
     <pre>
     db.default.driver=org.h2.Driver
     #db.default.url="jdbc:h2:tcp:localhost:9090/database/default"
@@ -33,7 +37,19 @@ play2.0.4で作ってます。
     </pre>
 
  2. DOGAインストールディレクトリ
+
     <pre>
     dev7.doga.parser.dogaCommonDir = /Users/daishi_hmr/tool/dogacga/common
     dev7.doga.parser.dogaDataDir = /Users/daishi_hmr/tool/dogacga/data
     </pre>
+
+5. 起動
+ 1. 以下のコマンドを実行
+
+    <pre>
+    play run
+    </pre>
+
+ 2. ブラウザで表示する
+
+<http://localhost:9000/>
