@@ -15,6 +15,7 @@ play2.0.4で作ってます。
 
 2. DOGA-L3をセットアップ
  1. COMMONディレクトリ・DATAディレクトリ以下のディレクトリ・ファイル名をすべて小文字にする
+    ![小文字化](http://cloud.github.com/downloads/daishihmr/dogencha/tolowercase.png)
 
 3. TwitterからConsumerKeyを取得
  1. dogenchaディレクトリにファイルtwitter.propertiesを作成し、以下のように記述
