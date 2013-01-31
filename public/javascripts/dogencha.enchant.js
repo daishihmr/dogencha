@@ -4,8 +4,8 @@
      * @namespace
      */
     enchant.gl.dogencha = {};
-    //    enchant.gl.dogencha.DOMAIN = "doga.dev7.jp";
-    enchant.gl.dogencha.DOMAIN = "localhost:9000";
+    enchant.gl.dogencha.DOMAIN = "doga.dev7.jp";
+    // enchant.gl.dogencha.DOMAIN = "localhost:9000";
 
     /**
      * ajaxで取得したL3Pオブジェクトを元に、Sprite3Dを作成する.
@@ -145,7 +145,7 @@
 
             /**
              * データの実体
-             * 
+             *
              * @type {Sprite3D}
              */
             this._entity = entity;
@@ -159,7 +159,7 @@
 
             /**
              * ユニットツリーの子ノード.
-             * 
+             *
              * enchant.jsのイベントツリーとは関係ない.
              */
             this.childUnits = [];
@@ -380,7 +380,7 @@
     };
     /**
      *  複製する.
-     *  
+     *
      *  @scope enchant.gl.Quat.prototype
      */
     enchant.gl.Quat.prototype.clone = function() {
