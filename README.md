@@ -34,8 +34,8 @@ dogenchaディレクトリにファイルtwitter.propertiesを作成し、以下
 </pre>
 #### DOGACGAのcommonディレクトリとdataディレクトリの位置を設定
 <pre>
-    dev7.doga.parser.dogaCommonDir = C:/Program Files/DOGACGA/common
-    dev7.doga.parser.dogaDataDir = C:/Program Files/DOGACGA/data
+    dev7.doga.parser.dogaCommonDir = "C:/Program Files/DOGACGA/common"
+    dev7.doga.parser.dogaDataDir = "C:/Program Files/DOGACGA/data"
 </pre>
 
 ### 6. 起動
