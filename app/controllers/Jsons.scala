@@ -83,7 +83,7 @@ object Jsons extends Controller {
   }
   def convertAndJson(jsonp: Boolean, dataName: String, converter: CONVERTER) = Action { implicit request =>
     val dataFile = new File(Setting.dataDir, dataName)
-    val cacheFile = new File(Setting.cacheDir, dataName + ".js")
+    val cacheFile = new File(Setting.cacheDir, dataName + ".json")
 
     log.debug("data file = " + dataFile)
     if (dataFile.exists()) {
