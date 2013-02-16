@@ -1,27 +1,26 @@
 /**
  * @fileOverview
  * nineleap.enchant.js
- * @version 0.3 (2012/02/01)
+ * @version 0.3.1 (2012/11/15)
  * @requires enchant.js v0.4.0 or later
  *
  * @description
  * enchant.js extension for 9leap.net
  * 9leap.net 向けの enchant.js 拡張プラグイン。
- * game.end の引数にスコアと結果の文字列を渡すことで、ランキングに登録できる。
+ * core.end の引数にスコアと結果の文字列を渡すことで、ランキングに登録できる。
  * (9leapにアップロードした後のみランキング画面にジャンプする)
  *
  * @usage
 
- var game = new Game(320, 320);
+ var core = new Core(320, 320);
 
- game.onload = function(){
+ core.onload = function(){
  // executed after player pushed "START"
  // ...
- if(some.condition)game.end(score, result);
+ if(some.condition)core.end(score, result);
  };
 
- game.start();
-
+ core.start();
  */
 
 (function() {
@@ -32,33 +31,32 @@
     enchant.nineleap = { assets: ['start.png', 'end.png'] };
 
     /**
-     * @scope enchant.nineleap.Game.prototype
+     * @scope enchant.nineleap.Core.prototype
      */
-    enchant.nineleap.Game = enchant.Class.create(enchant.Game, {
+    enchant.nineleap.Core = enchant.Class.create(enchant.Core, {
         /**
          * start, gameover の画像を表示し、
-         * 最後にスコアを送信するように拡張された Game クラス
+         * 最後にスコアを送信するように拡張された Core クラス
          * @param width
          * @param height
          * @constructs
          */
         initialize: function(width, height) {
-            enchant.Game.call(this, width, height);
+            enchant.Core.call(this, width, height);
             this.addEventListener('load', function() {
-                var game = this;
+                var core = this;
                 this.startScene = new enchant.nineleap.SplashScene();
-                this.startScene._element.style.zIndex = 10;
                 this.startScene.image = this.assets['start.png'];
                 this.startScene.addEventListener('touchend', function() {
-                    if (game.started === false) {
-                        if (game.onstart != null) {
-                            game.onstart();
+                    if (core.started === false) {
+                        if (core.onstart != null) {
+                            core.onstart();
                         }
-                        game.started = true;
-                        gameStart = true;   // deprecated
+                        core.started = true;
+                        coreStart = true;   // deprecated
                     }
-                    if (game.currentScene === this) {
-                        game.popScene();
+                    if (core.currentScene === this) {
+                        core.popScene();
                     }
                     this.removeEventListener('touchend', arguments.callee);
                 });
@@ -68,10 +66,9 @@
                             this.onstart();
                         }
                         this.started = true;
-                        gameStart = true;   // deprecated
                     }
-                    if (game.currentScene === game.startScene) {
-                        game.popScene();
+                    if (core.currentScene === core.startScene) {
+                        core.popScene();
                     }
                     this.removeEventListener('keydown', arguments.callee);
                 });
@@ -82,7 +79,7 @@
             });
             this.scoreQueue = false;
             this.started = false;
-            gameStart = false; // deprecated
+            coreStart = false; // deprecated
         },
 
         loadImage: function(src, callback) {
@@ -95,32 +92,42 @@
         },
 
         start: function() {
-            var game = this;
+            var core = this;
+
+            var onloadTimeSetter = function() {
+                this.currentTime = this.getTime();
+                this._nextTime = 0;
+                this.removeEventListener('load', onloadTimeSetter);
+                this.running = true;
+                this.ready = true;
+                this._requestNextFrame();
+            };
+            this.addEventListener('load', onloadTimeSetter);
 
             if (this._intervalID) {
                 window.clearInterval(this._intervalID);
             } else if (this._assets.length) {
 
-                if (enchant.Sound.enabledInMobileSafari && !game._touched &&
+                if (enchant.Sound.enabledInMobileSafari && !core._touched &&
                     enchant.ENV.VENDOR_PREFIX === 'webkit' && enchant.ENV.TOUCH_ENABLED) {
                     console.log("mobile_first");
                     var scene = new enchant.Scene();
                     scene.backgroundColor = '#000';
-                    var size = Math.round(game.width / 10);
-                    var sprite = new enchant.Sprite(game.width, size);
-                    sprite.y = (game.height - size) / 2;
-                    sprite.image = new enchant.Surface(game.width, size);
+                    var size = Math.round(core.width / 10);
+                    var sprite = new enchant.Sprite(core.width, size);
+                    sprite.y = (core.height - size) / 2;
+                    sprite.image = new enchant.Surface(core.width, size);
                     sprite.image.context.fillStyle = '#fff';
                     sprite.image.context.font = (size - 1) + 'px bold Helvetica,Arial,sans-serif';
                     var width = sprite.image.context.measureText('Touch to Start').width;
-                    sprite.image.context.fillText('Touch to Start', (game.width - width) / 2, size - 1);
+                    sprite.image.context.fillText('Touch to Start', (core.width - width) / 2, size - 1);
                     scene.addChild(sprite);
                     document.addEventListener('touchstart', function() {
-                        game._touched = true;
-                        game.removeScene(scene);
-                        game.start();
+                        core._touched = true;
+                        core.removeScene(scene);
+                        core.start();
                     }, true);
-                    game.pushScene(scene);
+                    core.pushScene(scene);
                     return;
                 }
 
@@ -138,10 +145,10 @@
                     var e = new enchant.Event('progress');
                     e.loaded = ++loaded;
                     e.total = total;
-                    game.dispatchEvent(e);
+                    core.dispatchEvent(e);
                     if (loaded === total) {
-                        game.removeScene(game.loadingScene);
-                        game.dispatchEvent(new enchant.Event('load'));
+                        core.removeScene(core.loadingScene);
+                        core.dispatchEvent(new enchant.Event('load'));
                     }
                 };
                 for (i = 0, l = assets.length; i < l; i++) {
@@ -152,10 +159,10 @@
                         var e = new enchant.Event('progress');
                         e.loaded = ++loaded;
                         e.total = total;
-                        game.dispatchEvent(e);
+                        core.dispatchEvent(e);
                         if (loaded === total) {
-                            game.removeScene(game.loadingScene);
-                            game.dispatchEvent(new enchant.Event('load'));
+                            core.removeScene(core.loadingScene);
+                            core.dispatchEvent(new enchant.Event('load'));
                         }
                     });
                 }
@@ -164,10 +171,10 @@
                         var e = new enchant.Event('progress');
                         e.loaded = ++loaded;
                         e.total = total;
-                        game.dispatchEvent(e);
+                        core.dispatchEvent(e);
                         if (loaded === total) {
-                            game.removeScene(game.loadingScene);
-                            game.dispatchEvent(new enchant.Event('load'));
+                            core.removeScene(core.loadingScene);
+                            core.dispatchEvent(new enchant.Event('load'));
                         }
                     });
                 }
@@ -177,10 +184,10 @@
                         var e = new enchant.Event('progress');
                         e.loaded = ++loaded;
                         e.total = total;
-                        game.dispatchEvent(e);
+                        core.dispatchEvent(e);
                         if (loaded === total) {
-                            game.removeScene(game.loadingScene);
-                            game.dispatchEvent(new enchant.Event('load'));
+                            core.removeScene(core.loadingScene);
+                            core.dispatchEvent(new enchant.Event('load'));
                         }
                     });
                 }
@@ -188,11 +195,6 @@
             } else {
                 this.dispatchEvent(new enchant.Event('load'));
             }
-            this.currentTime = Date.now();
-            this._intervalID = window.setInterval(function() {
-                game._tick();
-            }, 1000 / this.fps);
-            this.running = true;
         },
 
         end: function(score, result, img) {
@@ -212,7 +214,7 @@
                 this.endScene.addEventListener('touchend', submit);
                 window.setTimeout(submit, 3000);
             }
-            enchant.Game.instance.end = function() {
+            enchant.Core.instance.end = function() {
             };
         }
     });

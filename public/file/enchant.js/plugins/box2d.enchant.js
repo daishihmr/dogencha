@@ -156,9 +156,7 @@ enchant.box2d = {};
             this.addEventListener(enchant.Event.ENTER_FRAME, function(e) {
                 this.x = this.x;
                 this.y = this.y;
-                if (time % 2) {   //なぜか移動と回転を一緒にできない。謎。
-                    this.rotation = this.angle;
-                }
+                this.rotation = this.angle;
                 time++;
                 time = time % 2;
             });
@@ -237,7 +235,7 @@ enchant.box2d = {};
                 this._x = x;
                 x += this.width / 2;
                 this.body.m_body.SetPosition(new b2Vec2(x / WORLD_SCALE, this.body.m_body.GetPosition().y));
-                this._updateCoordinate();
+                this._dirty = true;
             }
         },
         /**
@@ -252,7 +250,7 @@ enchant.box2d = {};
                 this._y = y;
                 y += this.height / 2;
                 this.body.m_body.SetPosition(new b2Vec2(this.body.m_body.GetPosition().x, y / WORLD_SCALE));
-                this._updateCoordinate();
+                this._dirty = true;
             }
         },
         /**
@@ -437,10 +435,10 @@ enchant.box2d = {};
          * removeChildではなくこちらでSpriteを取り除く
          */
         destroy: function() {
-            if (this.scene != null) {
-                world.DestroyBody(this.body.m_body);
-                this.body.Destroy();
-                this.scene.removeChild(this);
+            world.DestroyBody(this.body.m_body);
+            this.body.Destroy();
+            if (this.parentNode !== null) {
+                this.parentNode.removeChild(this);
             }
         }
 
@@ -454,7 +452,7 @@ enchant.box2d = {};
          * 四角形の物理シミュレーション用Sprite
          * @example
          *   var bear = new PhyBoxSprite(32, 32, enchant.box2d.DYNAMIC_SPRITE, 1.0, 0.5, 0.3, true);
-         *   bear.image = game.assets['chara1.gif'];
+         *   bear.image = core.assets['chara1.gif'];
          *
          * @param {Number} [width] Spriteの横幅.
          * @param {Number} [height] Spriteの高さ.
@@ -483,7 +481,7 @@ enchant.box2d = {};
          * 円の物理シミュレーション用Sprite
          * @example
          *   var bear = new PhyCircleSprite(16, enchant.box2d.DYNAMIC_SPRITE, 1.0, 0.5, 0.3, true);
-         *   bear.image = game.assets['chara1.gif'];
+         *   bear.image = core.assets['chara1.gif'];
          *
          @param {Number} [radius] Spriteの半径.
          * @param {Boolean}   [staticOrDynamic] 静止するか動くか.
