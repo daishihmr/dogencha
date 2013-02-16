@@ -48,10 +48,11 @@ object Application extends Controller {
   /** トップページ表示 */
   def index = Action { implicit request =>
     val modelList = DB.withConnection { implicit connection =>
+      val reg = "(.+\\.(fsc|l2p|l2c|l3p|l3c)$)".r
       SQL("select root_file from model where " + where +
         " order by updated_at desc limit 10").as(str("root_file").*).toList.map {
         _ match {
-          case n if n.endsWith("l3p") || n.endsWith("l3c") => n
+          case reg(n, exp) => n
           case _ => null
         }
       }.filter(_ != null)
@@ -211,7 +212,8 @@ object Application extends Controller {
           case "zip" => {
             val unzip = new Unzip
             try {
-              unzip.unzip(Setting.userDir, f.filename, f.ref.file, "suf", "atr", "l3p", "l3c", "bmp")
+              unzip.unzip(Setting.userDir, f.filename, f.ref.file, 
+                "suf", "atr", "fsc", "l2p", "l2c", "l3p", "l3c", "bmp", "png", "pic", "jpg", "jpeg")
               None
             } catch {
               case e => {

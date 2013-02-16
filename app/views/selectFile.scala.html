@@ -48,13 +48,13 @@
     </div>
 
 <script type="text/javascript" src='@routes.Assets.at("jquery-treeview/jquery.treeview.js")'></script>
-<script src='http://@(Setting.staticServerName)/enchant.js/enchant.js' type='text/javascript'></script>
-<script src='http://@(Setting.staticServerName)/enchant.js/plugins/gl.enchant.js' type='text/javascript'></script>
 <script src='http://@(Setting.staticServerName)/enchant.js/plugins/libs/gl-matrix-min.js' type='text/javascript'></script>
+<script src='http://@(Setting.staticServerName)/enchant.js/enchant.min.js' type='text/javascript'></script>
+<script src='http://@(Setting.staticServerName)/enchant.js/plugins/gl.enchant.js' type='text/javascript'></script>
 <script src='http://@(Setting.staticServerName)/enchant.js/plugins/primitive.gl.enchant.js' type='text/javascript'></script>
-<script src='@routes.Assets.at("javascripts/dogencha.enchant.js")' type='text/javascript'></script>
-<script type="text/javascript" src='@routes.Assets.at("javascripts/util.js")'></script>
-<script type="text/javascript" src='@routes.Assets.at("javascripts/makeup.js")'></script>
+<script src='@routes.Assets.at("file/dogencha.enchant.js")' type='text/javascript'></script>
+<script src='@routes.Assets.at("javascripts/util.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/makeup.js")' type="text/javascript"></script>
 <script type="text/javascript">
 $(function() {
 	$("#file-list").treeview({
@@ -70,7 +70,7 @@ $(function() {
 
 @list(f: java.io.File) = {
   @if(f.isFile) {
-    @if(f.getName.endsWith(".l3p") || f.getName.endsWith(".l3c")) {
+    @if("(.+\\.(fsc|l2p|l2c|l3p|l3c)$)".r.findFirstIn(f.getName).isDefined) {
       <li><span class="file"><a class="file-node" href="javascript:void(0)" data-value='@dataPath(f)'>@f.getName</a></span></li>
     }
   } else {

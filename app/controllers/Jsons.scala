@@ -17,8 +17,9 @@ import com.google.common.io.InputSupplier
 import anorm.SQL
 import anorm.sqlToSimple
 import anorm.toParameterValue
-import jp.dev7.enchant.doga.converter.l3c.L3cConverter
-import jp.dev7.enchant.doga.converter.l3p.L3pConverter
+import jp.dev7.enchant.doga.converter.L2cConverter
+import jp.dev7.enchant.doga.converter.L3cConverter
+import jp.dev7.enchant.doga.converter.UnitConverter
 import play.api.Play.current
 import play.api.db.DB
 import play.api.libs.iteratee.Enumerator
@@ -49,12 +50,31 @@ object Jsons extends Controller {
   def jsonp(dataName: String) = process(dataName, true)
 
   def process(dataName: String, jsonp: Boolean) = dataName match {
-    case dn if dn.endsWith(".l3p") => convertAndJson(jsonp, dn, new L3pConverter)
-    case dn if dn.endsWith(".l3p.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L3pConverter)
-    case dn if dn.endsWith(".l3p.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new L3pConverter)
+    case dn if dn.endsWith(".fsc") => convertAndJson(jsonp, dn, new UnitConverter)
+    case dn if dn.endsWith(".fsc.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new UnitConverter)
+    case dn if dn.endsWith(".fsc.json") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new UnitConverter)
+    case dn if dn.endsWith(".fsc.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new UnitConverter)
+
+    case dn if dn.endsWith(".l2p") => convertAndJson(jsonp, dn, new UnitConverter)
+    case dn if dn.endsWith(".l2p.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new UnitConverter)
+    case dn if dn.endsWith(".l2p.json") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new UnitConverter)
+    case dn if dn.endsWith(".l2p.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new UnitConverter)
+
+    case dn if dn.endsWith(".l3p") => convertAndJson(jsonp, dn, new UnitConverter)
+    case dn if dn.endsWith(".l3p.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new UnitConverter)
+    case dn if dn.endsWith(".l3p.json") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new UnitConverter)
+    case dn if dn.endsWith(".l3p.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new UnitConverter)
+
+    case dn if dn.endsWith(".l2c") => convertAndJson(jsonp, dn, new L2cConverter)
+    case dn if dn.endsWith(".l2c.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L2cConverter)
+    case dn if dn.endsWith(".l2c.json") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L2cConverter)
+    case dn if dn.endsWith(".l2c.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new L2cConverter)
+
     case dn if dn.endsWith(".l3c") => convertAndJson(jsonp, dn, new L3cConverter)
     case dn if dn.endsWith(".l3c.js") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L3cConverter)
+    case dn if dn.endsWith(".l3c.json") => convertAndJson(jsonp, dn.substring(0, dn.length - 3), new L3cConverter)
     case dn if dn.endsWith(".l3c.jsonp") => convertAndJson(jsonp, dn.substring(0, dn.length - 6), new L3cConverter)
+
     case _ => Action(NotFound)
   }
 
