@@ -1,5 +1,6 @@
 package util
 
+import java.util.Date
 import play.api.mvc.Flash
 import play.api.mvc.Session
 import twitter4j.auth.AccessToken
@@ -11,17 +12,25 @@ import twitter4j.TwitterException
 object Twitters {
   implicit def wrapTwitter(twitter: Twitter): TwitterWraper = new TwitterWraper(twitter)
 
+  val twitterMap = scala.collection.mutable.Map[String, (Date, Twitter)]()
+
   def create = new TwitterFactory().getInstance()
 
   def fromSession(implicit session: Session) = {
     val accessToken = session.get("accessToken")
-    val accessTokenSecret = session.get("accessTokenSecret")
 
-    if (accessToken.isEmpty || accessTokenSecret.isEmpty) {
+    if (accessToken.isEmpty) {
       None
     } else {
-      Some(new TwitterFactory().getInstance(new AccessToken(
-        accessToken.get, accessTokenSecret.get)))
+      val result = twitterMap.get(accessToken.get)
+      result.map { t =>
+        if (java.lang.System.currentTimeMillis - t._1.getTime < 1000*60*2) {
+          t._2
+        } else {
+          twitterMap.remove(accessToken.get)
+          null
+        }
+      }
     }
   }
 

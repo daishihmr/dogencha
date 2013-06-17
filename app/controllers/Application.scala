@@ -1,5 +1,6 @@
 package controllers
 
+import java.util.Date
 import java.io.File
 
 import org.slf4j.LoggerFactory
@@ -184,15 +185,13 @@ object Application extends Controller {
   /** ログイン.Twitterからのコールバック処理 */
   def callback = Action { implicit request =>
     Twitters.requestTokenFromFlash.map { requestToken =>
-
       param("oauth_verifier").map { verifier =>
+        val twitter = Twitters.create
+        val accessToken = twitter.getOAuthAccessToken(requestToken, verifier)
 
-        val accessToken = Twitters.create.getOAuthAccessToken(requestToken, verifier)
-
+        Twitters.twitterMap.put(accessToken.getToken(), (new Date(), twitter))
         Redirect(routes.Application.homePage)
-          .withSession(
-            "accessToken" -> accessToken.getToken(),
-            "accessTokenSecret" -> accessToken.getTokenSecret())
+          .withSession("accessToken" -> accessToken.getToken())
 
       }.getOrElse(unauthorizedPage)
     }.getOrElse(unauthorizedPage)
