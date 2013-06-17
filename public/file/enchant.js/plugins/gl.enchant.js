@@ -22,6 +22,10 @@
  */
 enchant.gl = {};
 
+if (typeof glMatrixArrayType === 'undefined') {
+    throw new Error('should load gl-matrix.js before loading gl.enchant.js');
+}
+
 (function() {
 
     var CONTEXT_NAME = 'experimental-webgl';
@@ -42,9 +46,9 @@ enchant.gl = {};
         }
     }());
 
-    enchant.gl.Game = enchant.Class.create(parentModule.Game, {
+    enchant.gl.Core = enchant.Class.create(parentModule.Core, {
         initialize: function(width, height) {
-            parentModule.Game.call(this, width, height);
+            parentModule.Core.call(this, width, height);
             this.GL = new GLUtil();
             this.currentScene3D = null;
             this.addEventListener('enterframe', function(e) {
@@ -75,15 +79,15 @@ enchant.gl = {};
 
     var GLUtil = enchant.Class.create({
         initialize: function() {
-            var game = enchant.Game.instance;
-            if (typeof game.GL !== 'undefined') {
-                return game.GL;
+            var core = enchant.Core.instance;
+            if (typeof core.GL !== 'undefined') {
+                return core.GL;
             }
-            this._createStage(game.width, game.height, game.scale);
+            this._createStage(core.width, core.height, core.scale);
             this._prepare();
             this.textureManager = new TextureManager();
             this.detectColorManager = new DetectColorManager();
-            this.detectFrameBuffer = new enchant.gl.FrameBuffer(game.width, game.height);
+            this.detectFrameBuffer = new enchant.gl.FrameBuffer(core.width, core.height);
             this.defaultProgram = new enchant.gl.Shader(DEFAULT_VERTEX_SHADER_SOURCE, DEFAULT_FRAGMENT_SHADER_SOURCE);
             this.setDefaultProgram();
         },
@@ -109,13 +113,13 @@ enchant.gl = {};
             var stage = document.getElementById('enchant-stage');
             var cvs = this._canvas = createGLCanvas(width, height, scale);
             var detect = new enchant.Sprite(width, height);
-            var game = enchant.Game.instance;
+            var core = enchant.Core.instance;
             (function() {
                 var color = new Uint8Array(4);
                 var touching = null;
                 var sprite;
                 detect.addEventListener('touchstart', function(e) {
-                    var scene = game.currentScene3D;
+                    var scene = core.currentScene3D;
                     var x = parseInt(e.x, 10);
                     var y = parseInt(this.height - e.y, 10);
                     that.detectFrameBuffer.bind();
@@ -142,8 +146,8 @@ enchant.gl = {};
             }());
             window['gl'] = this._gl = this._getContext(cvs);
             div.appendChild(cvs);
-            stage.insertBefore(div, game.rootScene._element);
-            game.rootScene.addChild(detect);
+            stage.insertBefore(div, core.rootScene._element);
+            core.rootScene.addChild(detect);
         },
         _getContext: function(canvas, debug) {
             var ctx = canvas.getContext(CONTEXT_NAME);
@@ -379,12 +383,12 @@ enchant.gl = {};
          * @constructs
          */
         initialize: function(width, height) {
-            var game = enchant.Game.instance;
+            var core = enchant.Core.instance;
             if (typeof width === 'undefined') {
-                width = game.width;
+                width = core.width;
             }
             if (typeof height === 'undefined') {
-                height = game.height;
+                height = core.height;
             }
             this.framebuffer = gl.createFramebuffer();
             this.colorbuffer = gl.createRenderbuffer();
@@ -755,7 +759,7 @@ enchant.gl = {};
          */
         slerp: function(another, ratio) {
             var q = new enchant.gl.Quat(0, 0, 0, 0);
-            quat4.slerp(this._quat, another._quat, ratio, q);
+            quat4.slerp(this._quat, another._quat, ratio, q._quat);
             return q;
         },
         /**
@@ -1031,13 +1035,13 @@ enchant.gl = {};
 
         _write: function() {
             gl.bindTexture(gl.TEXTURE_2D, this._glTexture);
-            enchant.Game.instance.GL.textureManager._writeWebGLTexture(this._image, gl.TEXTURE_2D, this._wrap, this._mipmap);
+            enchant.Core.instance.GL.textureManager._writeWebGLTexture(this._image, gl.TEXTURE_2D, this._wrap, this._mipmap);
             gl.bindTexture(gl.TEXTURE_2D, null);
         },
 
         /**
          * Texture image source.
-         * You can set URL or game.assets data.
+         * You can set URL or core.assets data.
          * @type String
          * @type enchant.Surface
          */
@@ -1051,10 +1055,10 @@ enchant.gl = {};
                     return;
                 }
                 var that = this;
-                var game = enchant.Game.instance;
+                var core = enchant.Core.instance;
                 var onload = (function(that) {
                     return function() {
-                        that._glTexture = game.GL.textureManager.getWebGLTexture(that._image, that._flipY, that._wrap, that._mipmap);
+                        that._glTexture = core.GL.textureManager.getWebGLTexture(that._image, that._flipY, that._wrap, that._mipmap);
                     };
                 }(that));
                 if (source instanceof Image) {
@@ -1219,7 +1223,7 @@ enchant.gl = {};
          *   sprite.mesh.setBaseColor('rgba(255, 0, 255, 1.0');
          */
         setBaseColor: function(color) {
-            var c = enchant.Game.instance.GL.parseColor(color);
+            var c = enchant.Core.instance.GL.parseColor(color);
             var newColors = [];
             for (var i = 0, l = this.vertices.length / 3; i < l; i++) {
                 Array.prototype.push.apply(newColors, c);
@@ -1567,8 +1571,8 @@ enchant.gl = {};
             this._rotation = mat4.identity();
             this._normMat = mat3.identity();
 
-            var game = enchant.Game.instance;
-            this.detectColor = game.GL.detectColorManager.attachDetectColor(this);
+            var core = enchant.Core.instance;
+            this.detectColor = core.GL.detectColorManager.attachDetectColor(this);
 
             var parentEvent = function(e) {
                 if (this.parentNode instanceof enchant.gl.Sprite3D) {
@@ -1649,7 +1653,7 @@ enchant.gl = {};
          * Can be used corresponding Collada file's loaded assets.
          * @example
          *   var sp = new Sprite3D();
-         *   sp.set(game.assets['sample.dae']);
+         *   sp.set(core.assets['sample.dae']);
          *   //Becomes Sprite3D with sample.dae model information
          *
          */
@@ -1990,7 +1994,7 @@ enchant.gl = {};
             this.globalZ = this._global[2];
         },
 
-        _render: function() {
+        _render: function(detectTouch) {
             var useTexture = this.mesh.texture._image ? 1.0 : 0.0;
 
             mat4.toInverseMat3(this.tmpMat, this._normMat);
@@ -2017,16 +2021,16 @@ enchant.gl = {};
             };
 
             var length = this.mesh.indices.length;
-            enchant.Game.instance.GL.renderElements(this.mesh._indices, 0, length, attributes, uniforms);
+            enchant.Core.instance.GL.renderElements(this.mesh._indices, 0, length, attributes, uniforms);
         },
 
-        _draw: function(scene, hoge, baseMatrix) {
+        _draw: function(scene, detectTouch, baseMatrix) {
 
             this._transform(baseMatrix);
 
             if (this.childNodes.length) {
                 for (var i = 0, l = this.childNodes.length; i < l; i++) {
-                    this.childNodes[i]._draw(scene, hoge, this.tmpMat);
+                    this.childNodes[i]._draw(scene, detectTouch, this.tmpMat);
                 }
             }
 
@@ -2034,11 +2038,11 @@ enchant.gl = {};
 
             if (this.mesh !== null) {
                 if (this.program !== null) {
-                    enchant.Game.instance.GL.setProgram(this.program);
-                    this._render();
-                    enchant.Game.instance.GL.setDefaultProgram();
+                    enchant.Core.instance.GL.setProgram(this.program);
+                    this._render(detectTouch);
+                    enchant.Core.instance.GL.setDefaultProgram();
                 } else {
-                    this._render();
+                    this._render(detectTouch);
                 }
             }
 
@@ -2157,12 +2161,12 @@ enchant.gl = {};
          * @constructs
          */
         initialize: function() {
-            var game = enchant.Game.instance;
+            var core = enchant.Core.instance;
             this.mat = mat4.identity();
             this.invMat = mat4.identity();
             this.invMatY = mat4.identity();
             this._projMat = mat4.create();
-            mat4.perspective(20, game.width / game.height, 1.0, 1000.0, this._projMat);
+            mat4.perspective(20, core.width / core.height, 1.0, 1000.0, this._projMat);
             this._changedPosition = false;
             this._changedCenter = false;
             this._changedUpVector = false;
@@ -2467,9 +2471,9 @@ enchant.gl = {};
          * @extends enchant.EventTarget
          */
         initialize: function() {
-            var game = enchant.Game.instance;
-            if (game.currentScene3D) {
-                return game.currentScene3D;
+            var core = enchant.Core.instance;
+            if (core.currentScene3D) {
+                return core.currentScene3D;
             }
             enchant.EventTarget.call(this);
             /**
@@ -2509,16 +2513,16 @@ enchant.gl = {};
             var func = function() {
                 that._draw();
             };
-            game.addEventListener('enterframe', func);
+            core.addEventListener('enterframe', func);
 
 
             var uniforms = {};
             uniforms['uUseCamera'] = 0.0;
             gl.activeTexture(gl.TEXTURE0);
-            game.GL.defaultProgram.setUniforms(uniforms);
+            core.GL.defaultProgram.setUniforms(uniforms);
 
-            if (game.currentScene3D === null) {
-                game.currentScene3D = this;
+            if (core.currentScene3D === null) {
+                core.currentScene3D = this;
             }
 
             this.setAmbientLight(new enchant.gl.AmbientLight());
@@ -2535,7 +2539,7 @@ enchant.gl = {};
                 return this._backgroundColor;
             },
             set: function(arg) {
-                var c = enchant.Game.instance.GL.parseColor(arg);
+                var c = enchant.Core.instance.GL.parseColor(arg);
                 this._backgroundColor = c;
                 gl.clearColor(c[0], c[1], c[2], c[3]);
 
@@ -2589,7 +2593,7 @@ enchant.gl = {};
             camera._changedUpVector = true;
             camera._changedProjection = true;
             this._camera = camera;
-            enchant.Game.instance.GL.defaultProgram.setUniforms({
+            enchant.Core.instance.GL.defaultProgram.setUniforms({
                 uUseCamera: 1.0
             });
         },
@@ -2629,7 +2633,7 @@ enchant.gl = {};
         setDirectionalLight: function(light) {
             this.directionalLight = light;
             this.useDirectionalLight = true;
-            enchant.Game.instance.GL.defaultProgram.setUniforms({
+            enchant.Core.instance.GL.defaultProgram.setUniforms({
                 uUseDirectionalLight: 1.0
             });
         },
@@ -2667,8 +2671,8 @@ enchant.gl = {};
         },
 
         _draw: function(detectTouch) {
-            var game = enchant.Game.instance;
-            var program = game.GL.defaultProgram;
+            var core = enchant.Core.instance;
+            var program = core.GL.defaultProgram;
 
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -2979,6 +2983,400 @@ enchant.gl = {};
         },
         toOBB: function(another) {
             return OBB2OBB(this, another);
+        }
+    });
+
+    // borrowed from MMD.js
+    var bezierp = function(x1, x2, y1, y2, x) {
+        var t, tt, v;
+        t = x;
+        while (true) {
+            v = ipfunc(t, x1, x2) - x;
+            if (v * v < 0.0000001) {
+                break;
+            }
+            tt = ipfuncd(t, x1, x2);
+            if (tt === 0) {
+                break;
+            }
+            t -= v / tt;
+        }
+        return ipfunc(t, y1, y2);
+    };
+    var ipfunc = function(t, p1, p2) {
+        return (1 + 3 * p1 - 3 * p2) * t * t * t + (3 * p2 - 6 * p1) * t * t + 3 * p1 * t;
+    };
+    var ipfuncd = function(t, p1, p2) {
+        return (3 + 9 * p1 - 9 * p2) * t * t + (6 * p2 - 12 * p1) * t + 3 * p1;
+    };
+    var frac = function(n1, n2, t) {
+        return (t - n1) / (n2 - n1);
+    };
+    var lerp = function(n1, n2, r) {
+        return n1 + r * (n2 - n1);
+    };
+
+    var _tmpve = vec3.create();
+    var _tmpvt = vec3.create();
+    var _tmpaxis = vec3.create();
+    var _tmpquat = quat4.create();
+    var _tmpinv = quat4.create();
+
+    /**
+     * @scope enchant.gl.State.prototype
+     */
+    enchant.gl.State = enchant.Class.create({
+        /**
+         * Base class for expressing animation condition.
+         * @param {Number[]} position
+         * @param {Number[]} rotation
+         * @constructs
+         */
+        initialize: function(position, rotation) {
+            this._position = vec3.create();
+            vec3.set(position, this._position);
+            this._rotation = quat4.create();
+            quat4.set(rotation, this._rotation);
+        },
+        /**
+         * Sets position/rotation.
+         */
+        set: function(pose) {
+            vec3.set(pose._position, this._position);
+            quat4.set(pose._rotation, this._rotation);
+        }
+    });
+
+    /**
+     * @scope enchant.gl.Pose.prototype
+     */
+    enchant.gl.Pose = enchant.Class.create(enchant.gl.State, {
+        /**
+         * Class for processing pose.
+         * @param {Number[]} position
+         * @param {Number[]} rotation
+         * @constructs
+         * @extends enchant.gl.State
+         */
+        initialize: function(position, rotation) {
+            enchant.gl.State.call(this, position, rotation);
+        },
+        /**
+         * Performs interpolation with other pose.
+         * @param {enchant.gl.Pose} another
+         * @param {Number} ratio
+         * @return {enchant.gl.Pose}
+         */
+        getInterpolation: function(another, ratio) {
+            vec3.lerp(this._position, another._position, ratio, _tmpve);
+            quat4.slerp(this._rotation, another._rotation, ratio, _tmpquat);
+            return new enchant.gl.Pose(_tmpve, _tmpquat);
+        },
+        _bezierp: function(x1, y1, x2, y2, x) {
+            return bezierp(x1, x2, y1, y2, x);
+        }
+    });
+
+    /**
+     * @scope enchant.gl.KeyFrameManager.prototype
+     */
+    enchant.gl.KeyFrameManager = enchant.Class.create({
+        /**
+         * Class for realizing key frame animation.
+         * Handles various data, not limited to enchant.gl.Pose.
+         * @constructs
+         */
+        initialize: function() {
+            this._frames = [];
+            this._units = [];
+            this.length = -1;
+            this._lastPose = null;
+        },
+        /**
+         * Add frame.
+         * @param {*} pose Key frame.
+         * @param {Number} frame Frame number.
+         */
+        addFrame: function(pose, frame) {
+            if (typeof frame !== 'number') {
+                this.length += 1;
+                frame = this.length;
+            }
+            if (frame > this.length) {
+                this.length = frame;
+                this._lastPose = pose;
+            }
+            this._frames.push(frame);
+            this._units[frame] = pose;
+        },
+        /**
+         * Return information for designated frame number.
+         * When there is no data corresponding to the designated frame, interpolated data from before and after are acquired.
+         * @param {Number} frame Frame number
+         * @return {*}
+         */
+        getFrame: function(frame) {
+            var prev, next, index, pidx, nidx;
+            var ratio = 0;
+            if (frame >= this.length) {
+                return this._lastPose;
+            }
+            if (this._units[frame]) {
+                return this._units[frame];
+            } else {
+                index = this._getPrevFrameIndex(frame);
+                pidx = this._frames[index];
+                nidx = this._frames[index + 1];
+                prev = this._units[pidx];
+                next = this._units[nidx];
+                ratio = this._frac(pidx, nidx, frame);
+                return this._interpole(prev, next, ratio);
+            }
+        },
+        bake: function() {
+            var state;
+            for (var i = 0, l = this.length; i < l; i++) {
+                if (this._units[i]) {
+                    continue;
+                }
+                state = this.getFrame(i);
+                this.addFrame(state, i);
+            }
+            this._sort();
+        },
+        _frac: function(p, n, t) {
+            return frac(p, n, t);
+        },
+        _interpole: function(prev, next, ratio) {
+            return prev.getInterpolation(next, ratio);
+        },
+        _sort: function() {
+            this._frames.sort(function(a, b) {
+                return a - b;
+            });
+        },
+        _getPrevFrameIndex: function(frame) {
+            for (var i = 0, l = this._frames.length; i < l; i++) {
+                if (this._frames[i] > frame) {
+                    break;
+                }
+            }
+            return i - 1;
+        }
+    });
+
+    /**
+     * @scope enchant.gl.Bone.prototype
+     */
+    enchant.gl.Bone = enchant.Class.create(enchant.gl.State, {
+        /**
+         * Class to display bone status.
+         * @param {String} name
+         * @param {Number} head
+         * @param {Number} position
+         * @param {Number} rotation
+         * @constructs
+         * @extends enchant.gl.State
+         */
+        initialize: function(name, head, position, rotation) {
+            enchant.gl.State.call(this, position, rotation);
+            this._name = name;
+            this._origin = vec3.create();
+
+            vec3.set(head, this._origin);
+
+            this._globalpos = vec3.create();
+            vec3.set(head, this._globalpos);
+
+            this._globalrot = quat4.identity();
+
+            this.parentNode = null;
+            this.childNodes = [];
+
+            /**
+             * During each IK settlement, function for which change is applied to quaternion is set.
+             */
+            this.constraint = null;
+        },
+        /**
+         * Add child bone to bone.
+         * @param {enchant.gl.Bone} child
+         */
+        addChild: function(child) {
+            this.childNodes.push(child);
+            child.parentNode = this;
+        },
+        /**
+         * Delete child bone from bone.
+         * @param {enchant.gl.Bone} child
+         */
+        removeChild: function(child) {
+            var i;
+            if ((i = this.childNodes.indexOf(child)) !== -1) {
+                this.childNodes.splice(i, 1);
+            }
+            child.parentNode = null;
+        },
+        /**
+         * Set bone pose.
+         * @param {*} poses
+         */
+        setPoses: function(poses) {
+            var child;
+            if (poses[this._name]) {
+                this.set(poses[this._name]);
+            }
+            for (var i = 0, l = this.childNodes.length; i < l; i++) {
+                child = this.childNodes[i];
+                child.setPoses(poses);
+            }
+        },
+        _applyPose: function(){
+            var parent = this.parentNode;
+            quat4.multiply(parent._globalrot, this._rotation, this._globalrot);
+            quat4.multiplyVec3(parent._globalrot, this._position, this._globalpos);
+            vec3.add(parent._globalpos, this._globalpos, this._globalpos);
+        },
+        _solveFK: function() {
+            var child;
+            this._applyPose();
+            for (var i = 0, l = this.childNodes.length; i < l; i++) {
+                child = this.childNodes[i];
+                child._solveFK();
+            }
+        },
+        _solve: function(quat) {
+            quat4.normalize(quat, this._rotation);
+            this._solveFK();
+        }
+    });
+
+    /**
+     * @scope enchant.gl.Skeleton.prototype
+     */
+    enchant.gl.Skeleton = enchant.Class.create({
+        /**
+         * Class that becomes bone structure route.
+         * @constructs
+         */
+        initialize: function() {
+            this.childNodes = [];
+            this._origin = vec3.create();
+            this._position = vec3.create();
+            this._rotation = quat4.identity();
+            this._globalpos = vec3.create();
+            this._globalrot = quat4.identity();
+            this._iks = [];
+        },
+        /**
+         * Add child bone to skeleton.
+         * @param {enchant.gl.Bone} child
+         */
+        addChild: function(bone) {
+            this.childNodes.push(bone);
+            bone.parentNode = this;
+        },
+        /**
+         * Delete child bone from skeleton.
+         * @param {enchant.gl.Bone} child
+         */
+        removeChild: function(bone) {
+            var i;
+            if ((i = this.childNodes.indexOf(bone)) !== -1) {
+                this.childNodes.splice(i, 1);
+            }
+            bone.parentNode = null;
+        },
+        /**
+         * Set pose.
+         * @param {*} poses
+         */
+        setPoses: function(poses) {
+            var child;
+            for (var i = 0, l = this.childNodes.length; i < l; i++) {
+                child = this.childNodes[i];
+                child.setPoses(poses);
+            }
+        },
+        /**
+         * Perform pose settlement according to FK.
+         * Make pose from set pose information.
+         */
+        solveFKs: function() {
+            var child;
+            for (var i = 0, l = this.childNodes.length; i < l; i++) {
+                child = this.childNodes[i];
+                child._solveFK();
+            }
+        },
+        /**
+         * Add IK control information.
+         * @param {enchant.gl.Bone} effector
+         * @param {enchant.gl.Bone} target
+         * @param {enchant.gl.Bone[]} bones
+         * @param {Number} maxangle
+         * @param {Number} iteration
+         * @see enchant.gl.Skeleton#solveIKs
+         */
+        addIKControl: function(effector, target, bones, maxangle, iteration) {
+            this._iks.push(arguments);
+        },
+        // by ccd
+        /**
+         * Perform pose settlement via IK.
+         * Base on information added via {@link enchant.gl.Skeleton#addIKControl}
+         */
+        solveIKs: function() {
+            var param;
+            for (var i = 0, l = this._iks.length; i < l; i++) {
+                param = this._iks[i];
+                this._solveIK.apply(this, param);
+            }
+        },
+        _solveIK: function(effector, target, bones, maxangle, iteration) {
+            var len, origin;
+            vec3.subtract(target._origin, target.parentNode._origin, _tmpinv);
+            var threshold = vec3.length(_tmpinv) * 0.1;
+            for (var i = 0; i < iteration; i++) {
+                vec3.subtract(target._globalpos, effector._globalpos, _tmpinv);
+                len = vec3.length(_tmpinv);
+                if (len < threshold) {
+                    break;
+                }
+                for (var j = 0, ll = bones.length; j < ll; j++) {
+                    origin = bones[j];
+                    this._ccd(effector, target, origin, maxangle, threshold);
+                }
+            }
+        },
+        _ccd: function(effector, target, origin, maxangle, threshold) {
+            vec3.subtract(effector._globalpos, origin._globalpos, _tmpve);
+            vec3.subtract(target._globalpos, origin._globalpos, _tmpvt);
+            vec3.cross(_tmpvt, _tmpve, _tmpaxis);
+            var elen = vec3.length(_tmpve);
+            var tlen = vec3.length(_tmpvt);
+            var alen = vec3.length(_tmpaxis);
+
+            if (elen < threshold || tlen < threshold || alen < threshold) {
+                return;
+            }
+            var rad = Math.acos(vec3.dot(_tmpve, _tmpvt) / elen / tlen);
+
+            if (rad > maxangle) {
+                rad = maxangle;
+            }
+            vec3.scale(_tmpaxis, Math.sin(rad / 2) / alen, _tmpquat);
+            _tmpquat[3] = Math.cos(rad / 2);
+            quat4.inverse(origin.parentNode._globalrot, _tmpinv);
+            quat4.multiply(_tmpinv, _tmpquat, _tmpquat);
+            quat4.multiply(_tmpquat, origin._globalrot, _tmpquat);
+
+
+            if (origin.constraint) {
+                origin.constraint(_tmpquat);
+            }
+
+            origin._solve(_tmpquat);
         }
     });
 

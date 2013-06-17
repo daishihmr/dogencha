@@ -84,19 +84,19 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;meta charset='UTF-8'&gt;
-&lt;script type='text/javascript' src='http://@(Setting.staticServerName)/enchant.js/enchant.js'&gt;&lt;/script&gt;
-&lt;script type='text/javascript' src='http://@(Setting.staticServerName)/enchant.js/plugins/gl.enchant.js'&gt;&lt;/script&gt;
-&lt;script type='text/javascript' src='http://@(Setting.staticServerName)/enchant.js/plugins/libs/gl-matrix-min.js'&gt;&lt;/script&gt;
-&lt;script type='text/javascript' src='http://@(Setting.staticServerName)/dogencha.enchant.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='https://raw.github.com/wise9/enchant.js/v0.6.3/plugins/libs/gl-matrix-min.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='https://raw.github.com/wise9/enchant.js/v0.6.3/enchant.min.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='https://raw.github.com/wise9/enchant.js/v0.6.3/plugins/gl.enchant.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='https://raw.github.com/daishihmr/dev7-enchant-doga/v5.0/dev7-doga-enchantjs/dogencha.enchant.js'&gt;&lt;/script&gt;
 &lt;script type='text/javascript'&gt;
 enchant();
 window.onload = function() {
-    var game = new Game();
-    game.preload('./@(simpleName(model.rootFile)).js');
+    var game = new Core();
+    game.preload('@(simpleName(model.rootFile)).js');
     game.onload = function() {
         var scene = new Scene3D();
-        var model = game.assets['./@(simpleName(model.rootFile)).js'];
-        model.addEventListener('enterframe', function(e) {
+        var model = game.assets['@(simpleName(model.rootFile)).js'];
+        model.on('enterframe', function(e) {
             this.rotateYaw(0.01);
         });
         scene.addChild(model);

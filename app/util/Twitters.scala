@@ -6,7 +6,6 @@ import twitter4j.auth.AccessToken
 import twitter4j.auth.RequestToken
 import twitter4j.TwitterFactory
 import twitter4j.Twitter
-import twitter4j.ProfileImage
 import twitter4j.TwitterException
 
 object Twitters {
@@ -51,7 +50,7 @@ class TwitterWraper(twitter: Twitter) {
   private lazy val user = twitter.showUser(twitter.getScreenName())
 
   lazy val img = accessToTwitter {
-    twitter.getProfileImage(twitter.getScreenName(), ProfileImage.NORMAL).getURL()
+    twitter.showUser(twitter.getScreenName()).getMiniProfileImageURL()
   }
   lazy val name = accessToTwitter {
     user.getName()
