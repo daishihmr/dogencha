@@ -1,5 +1,3 @@
-libraryDependencies += "jp.dev7" % "dev7-doga-converter" % "5.0-RC1"
-
 libraryDependencies += "org.twitter4j" % "twitter4j-core" % "3.0.3"
 
 libraryDependencies += "com.google.guava" % "guava" % "11.0.1"
