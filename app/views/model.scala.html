@@ -79,23 +79,24 @@
     
     <div>
         <h4>サンプルコード</h4>
-        <pre class="prettyprint" style="width:95%;height:520px">
+        <pre id="sampleCode" class="prettyprint" style="width:95%;height:520px">
 &lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
 &lt;meta charset='UTF-8'&gt;
-&lt;script type='text/javascript' src='https://raw.github.com/wise9/enchant.js/v0.6.3/plugins/libs/gl-matrix-min.js'&gt;&lt;/script&gt;
-&lt;script type='text/javascript' src='https://raw.github.com/wise9/enchant.js/v0.6.3/enchant.min.js'&gt;&lt;/script&gt;
-&lt;script type='text/javascript' src='https://raw.github.com/wise9/enchant.js/v0.6.3/plugins/gl.enchant.js'&gt;&lt;/script&gt;
-&lt;script type='text/javascript' src='https://raw.github.com/daishihmr/dev7-enchant-doga/v5.0/dev7-doga-enchantjs/dogencha.enchant.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='http://@(settings.Setting.staticServerName)/enchant.js/plugins/libs/gl-matrix-min.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='http://@(settings.Setting.staticServerName)/enchant.js/enchant.min.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='http://@(settings.Setting.staticServerName)/enchant.js/plugins/gl.enchant.js'&gt;&lt;/script&gt;
+&lt;script type='text/javascript' src='http://@(settings.Setting.staticServerName)/dev7-enchant-doga/dev7-doga-enchantjs/dogencha.enchant.js'&gt;&lt;/script&gt;
 &lt;script type='text/javascript'&gt;
+var JSONP_URL = '$$$JSONP_URL$$$';
 enchant();
 window.onload = function() {
     var game = new Core();
-    game.preload('@(simpleName(model.rootFile)).js');
+    game.preload(JSONP_URL);
     game.onload = function() {
         var scene = new Scene3D();
-        var model = game.assets['@(simpleName(model.rootFile)).js'];
+        var model = game.assets[JSONP_URL];
         model.on('enterframe', function(e) {
             this.rotateYaw(0.01);
         });
@@ -122,6 +123,9 @@ window.onload = function() {
 			    location.href = "@routes.Application.modelDelete(model.rootFile)";
 			}
 		});
+
+        var jsonpUrl = location.protocol + "//" + location.host + '@routes.Jsons.jsonp(model.rootFile)' + ".jsonp";
+        $("#sampleCode").text($("#sampleCode").text().replace("$$$JSONP_URL$$$", jsonpUrl));
 	});
 	</script>
 }

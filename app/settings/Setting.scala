@@ -14,7 +14,8 @@ object Setting {
 
   lazy val staticServerName = current.mode match {
     case Mode.Prod => "static.dev7.jp"
-    case _ => "localhost:" + port + "/assets/file"
+    case _ => "static.dev7.jp"
+    // case _ => "localhost:" + port + "/assets/file"
   }
 
   lazy val dataDir = current.mode match {
