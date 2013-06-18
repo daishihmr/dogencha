@@ -5,7 +5,7 @@ import PlayProject._
 object ApplicationBuild extends Build {
 
   val appName = "dogencha"
-  val appVersion = "2.0.0"
+  val appVersion = "2.0.1"
 
   val appDependencies = Seq(
     // Add your project dependencies here,
