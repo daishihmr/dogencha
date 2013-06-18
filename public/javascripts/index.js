@@ -97,8 +97,8 @@ $(function() {
 
 			showDataDetail(cursor);
 		};
-		game.addEventListener("leftbuttonup", toLeft);
-		game.addEventListener("rightbuttonup", toRight);
+		game.addEventListener("leftbuttondown", toLeft);
+		game.addEventListener("rightbuttondown", toRight);
 
 		var left = new Sprite(16, 16);
 		left.image = game.assets["http://static.dev7.jp/enchant.js/images/font2.png"];
@@ -156,6 +156,5 @@ function createShadow(s) {
 
 function showDataDetail(cursor) {
 	var modelName = modelNames[cursor];
-	console.log(modelName);
 	setDetailHref(modelName)
 }
