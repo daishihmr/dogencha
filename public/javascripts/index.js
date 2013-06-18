@@ -41,20 +41,15 @@ $(function() {
 					this.rotateYaw(0.01);
 				});
 
-				if (f.poses) {
-					f.curPose = 0;
-					f.addEventListener("enterframe", function(e) {
-						var poseNames = $.map(this.poses, function(v, k) {
-							return k;
-						})
-						poseNames = poseNames.sort();
-						if (this.age % 90 == 0) {
-							var pose = poseNames[this.curPose];
-							this.animate(pose, 30);
-							this.curPose = (this.curPose + 1)
-									% poseNames.length;
+				if (f instanceof enchant.gl.dogencha.Articulated) {
+					if (f.poses) {
+						f.setPose("_initialPose");
+						var m = f.mtl;
+						for (var name in f.poses) if (f.poses.hasOwnProperty(name)) {
+							m = m.motion(name, 10).delay(60);
 						}
-					});
+						m.loop();
+					}
 				}
 			}
 		}
@@ -106,20 +101,19 @@ $(function() {
 		game.addEventListener("rightbuttonup", toRight);
 
 		var left = new Sprite(16, 16);
-		left.image = game.assets["/assets/enchant.js/images/font2.png"];
+		left.image = game.assets["http://static.dev7.jp/enchant.js/images/font2.png"];
 		left.frame = 28;
 		left.scale(2, 2);
-		left.moveTo(8, game.height - left.height - 8);
+		left.moveTo(8, (game.height - left.height) / 2);
 		left.addEventListener("touchend", toLeft);
 		left.visible = false;
 		game.rootScene.addChild(left);
 
 		var right = new Sprite(16, 16);
-		right.image = game.assets["/assets/enchant.js/images/font2.png"];
+		right.image = game.assets["http://static.dev7.jp/enchant.js/images/font2.png"];
 		right.frame = 30;
 		right.scale(2, 2);
-		right.moveTo(game.width - right.width - 8, game.height - right.height
-				- 8);
+		right.moveTo(game.width - right.width - 8, (game.height - right.height) / 2);
 		right.addEventListener("touchend", toRight);
 		game.rootScene.addChild(right);
 
