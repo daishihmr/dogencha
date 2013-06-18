@@ -23,12 +23,12 @@ object Twitters {
       None
     } else {
       val result = twitterMap.get(accessToken.get)
-      result.map { t =>
+      result.flatMap { t =>
         if (java.lang.System.currentTimeMillis - t._1.getTime < 1000*60*2) {
-          t._2
+          Some(t._2)
         } else {
           twitterMap.remove(accessToken.get)
-          null
+          None
         }
       }
     }
