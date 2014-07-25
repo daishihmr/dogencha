@@ -1,4 +1,4 @@
-libraryDependencies += "org.twitter4j" % "twitter4j-core" % "3.0.3"
+libraryDependencies += "org.twitter4j" % "twitter4j-core" % "4.0.1"
 
 libraryDependencies += "com.google.guava" % "guava" % "11.0.1"
 

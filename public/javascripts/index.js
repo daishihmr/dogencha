@@ -15,7 +15,7 @@ $(function() {
 		scene.backgroundColor = "#004488";
 
 		var camera = new Camera3D();
-		camera.y = 0;
+		camera.y = 1;
 		camera.z = 6;
 		scene.setCamera(camera);
 		game.addEventListener("enterframe", function() {
